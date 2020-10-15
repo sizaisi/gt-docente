@@ -1,7 +1,6 @@
 .DS_Store
 /frontend/node_modules
 /frontend/dist
-/frontend/src/config/index.js
 /backend/config/db.php
 
 # local env files
