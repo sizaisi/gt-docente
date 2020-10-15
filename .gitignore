@@ -1,7 +1,7 @@
 .DS_Store
-frontend/node_modules
-frontend/dist
-backend/config/db.php
+/frontend/node_modules
+/frontend/dist
+/backend/config/db.php
 
 # local env files
 .env.local
