@@ -281,21 +281,13 @@
   </div>
 </template>
 <script>
-import verificar_requisitos_grado from "@/components/titulo_profesional_sustentacion_tesis/procedimientos/verificar_requisitos_grado/index.vue";
-import verificar_pertinencia_tema from "@/components/titulo_profesional_sustentacion_tesis/procedimientos/verificar_pertinencia_tema/index.vue";
-import designar_asesor_comision_calificacion from "@/components/titulo_profesional_sustentacion_tesis/procedimientos/designar_asesor_comision_calificacion/index.vue";
 import resolver_asignacion_asesoria_proyecto from "@/components/titulo_profesional_sustentacion_tesis/procedimientos/resolver_asignacion_asesoria_proyecto/index.vue";
-import emitir_resolucion_asignacion_asesor_tema from "@/components/titulo_profesional_sustentacion_tesis/procedimientos/emitir_resolucion_asignacion_asesor_tema/index.vue";
 import dar_conformidad_asesoramiento_proyecto from "@/components/titulo_profesional_sustentacion_tesis/procedimientos/dar_conformidad_asesoramiento_proyecto/index.vue";
-import nombrar_jurado_adjuntar_resolucion from "@/components/titulo_profesional_sustentacion_tesis/procedimientos/nombrar_jurado_adjuntar_resolucion/index.vue";
 import revisar_documentacion_proyecto from "@/components/titulo_profesional_sustentacion_tesis/procedimientos/revisar_documentacion_proyecto/index.vue";
 import dictaminar_aprobacion_proyecto from "@/components/titulo_profesional_sustentacion_tesis/procedimientos/dictaminar_aprobacion_proyecto/index.vue";
-import verificar_pagos_adjuntar_documentos from "@/components/titulo_profesional_sustentacion_tesis/procedimientos/verificar_pagos_adjuntar_documentos/index.vue";
 import emitir_acta_dictamen from "@/components/titulo_profesional_sustentacion_tesis/procedimientos/emitir_acta_dictamen/index.vue";
 import dictaminar_resultado_sustentacion from "@/components/titulo_profesional_sustentacion_tesis/procedimientos/dictaminar_resultado_sustentacion/index.vue";
 import emitir_acta_conformidad_redaccion_trabajo from "@/components/titulo_profesional_sustentacion_tesis/procedimientos/emitir_acta_conformidad_redaccion_trabajo/index.vue";
-import aprobar_consejo_facultad_autorizar_emision_diploma from "@/components/titulo_profesional_sustentacion_tesis/procedimientos/aprobar_consejo_facultad_autorizar_emision_diploma/index.vue";
-import generar_imprimir_diploma from "@/components/titulo_profesional_sustentacion_tesis/procedimientos/generar_imprimir_diploma/index.vue";
 
 export default {
   name: "info-expediente",
@@ -306,22 +298,14 @@ export default {
     grado_procedimiento: Object,
     idexpediente: String,
   },
-  components: {
-    verificar_requisitos_grado,
-    verificar_pertinencia_tema,
-    designar_asesor_comision_calificacion,
-    resolver_asignacion_asesoria_proyecto,
-    emitir_resolucion_asignacion_asesor_tema,
-    dar_conformidad_asesoramiento_proyecto,
-    nombrar_jurado_adjuntar_resolucion,
+  components: {        
+    resolver_asignacion_asesoria_proyecto,    
+    dar_conformidad_asesoramiento_proyecto,    
     revisar_documentacion_proyecto,
-    dictaminar_aprobacion_proyecto,
-    verificar_pagos_adjuntar_documentos,
+    dictaminar_aprobacion_proyecto,    
     emitir_acta_dictamen,
     dictaminar_resultado_sustentacion,
-    emitir_acta_conformidad_redaccion_trabajo,
-    aprobar_consejo_facultad_autorizar_emision_diploma,
-    generar_imprimir_diploma,
+    emitir_acta_conformidad_redaccion_trabajo,        
   },
   data() {
     return {
@@ -360,21 +344,30 @@ export default {
       nombre_documento: "",
     };
   },
+  created() {
+    if (this.idexpediente != null) {      
+      this.getLastMovimiento();
+      this.getExpediente();
+      this.getGraduando();
+      this.getArchivos();
+      this.getArchivosProcOrigen();
+    } else {
+      this.$router.push({ name: "home" });
+    }
+  },
   methods: {
-    getLastMovimiento() {
-      let me = this;
-      let formData = this._toFormData({
-        idgradproc_destino: this.grado_procedimiento.id,
-        idexpediente: this.idexpediente,
-      });
+    getLastMovimiento() {      
+      let formData = new FormData()
+      formData.append('idgradproc_destino', this.grado_procedimiento.id)
+      formData.append('idexpediente', this.idexpediente)      
 
       this.axios
         .post(`${this.url}/Movimiento/ultimoMovimiento`, formData)
-        .then(function (response) {
+        .then(response => {
           if (!response.data.error) {
-            me.movimiento = response.data.movimiento;
+            this.movimiento = response.data.movimiento;
           } else {
-            //console.log(response.data.message)
+            console.log(response.data.message)
           }
         });
     },
@@ -390,96 +383,64 @@ export default {
       this.nombre_documento = nombre_documento;
       this.modal = 1;
     },
-    getExpediente() {
-      // para mostrar los datos del expediente
-      let me = this;
-
-      let formData = this._toFormData({
-        idexpediente: this.idexpediente,
-      });
+    getExpediente() {     
+      let formData = new FormData()
+      formData.append('idexpediente', this.idexpediente)
 
       this.axios
         .post(`${this.url}/Expediente/getExpById`, formData)
-        .then(function (response) {
+        .then(response => {
           if (!response.data.error) {
-            me.expediente = response.data.expediente;
+            this.expediente = response.data.expediente;
           } else {
-            //console.log(response.data.message)
+            console.log(response.data.message)
           }
         });
     },
-    getGraduando() {
-      // para mostrar la informacion del graduando o graduandos
-      let me = this;
-      let formData = this._toFormData({
-        idexpediente: this.idexpediente,
-      });
+    getGraduando() {            
+      let formData = new FormData()
+      formData.append('idexpediente', this.idexpediente)
 
       this.axios
         .post(`${this.url}/GraduandoExpediente/getGraduando`, formData)
-        .then(function (response) {
+        .then(response => {
           if (!response.data.error) {
-            me.graduando = response.data.graduando;
+            this.graduando = response.data.graduando;
           } else {
-            //console.log(response.data.message)
+            console.log(response.data.message)
           }
         });
     },
-    getArchivos() {
-      let me = this;
-      var formData = this._toFormData({
-        idexpediente: this.idexpediente,
-      });
+    getArchivos() {      
+      let formData = new FormData()
+      formData.append('idexpediente', this.idexpediente)
 
       this.axios
         .post(`${this.url}/Archivo/index`, formData)
-        .then(function (response) {
+        .then(response => {
           if (!response.data.error) {
-            me.array_archivo = response.data.array_archivo;
+            this.array_archivo = response.data.array_archivo;
           } else {
-            //console.log(response.data.message)
+            console.log(response.data.message)
           }
         });
     },
-    getArchivosProcOrigen() {
-      let me = this;
-      var formData = this._toFormData({
-        idgrado_proc: this.grado_procedimiento.id, //procedimiento actual seria el destino
-        idexpediente: this.idexpediente,
-      });
+    getArchivosProcOrigen() {      
+      let formData = new FormData()
+      formData.append('idgrado_proc', this.grado_procedimiento.id)
+      formData.append('idexpediente', this.idexpediente)
 
       this.axios
         .post(`${this.url}/Archivo/show`, formData)
-        .then(function (response) {
+        .then(response => {
           if (!response.data.error) {
-            me.array_archivo_ultimo = response.data.array_archivo_ultimo;
+            this.array_archivo_ultimo = response.data.array_archivo_ultimo;
           } else {
-            //console.log(response.data.message)
+            console.log(response.data.message)
           }
         });
-    },
-    _toFormData(obj) {
-      var fd = new FormData();
-
-      for (var i in obj) {
-        fd.append(i, obj[i]);
-      }
-
-      return fd;
-    },
-  },
-  mounted: function () {
-    if (this.idexpediente != null) {
-      //si se ha establecido id del expediente
-      this.getLastMovimiento();
-      this.getExpediente();
-      this.getGraduando();
-      this.getArchivos();
-      this.getArchivosProcOrigen();
-    } else {
-      this.$router.push({ name: "home" });
-    }
-  },
+    },    
+  },  
 };
 </script>
 <style scoped>

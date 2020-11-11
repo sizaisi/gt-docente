@@ -3,17 +3,8 @@
    <div class="container-fluid p-4" style="background-color: #fff;">
         <h5 class="text-center font-weight-bold text-uppercase text-danger" v-text="grado_procedimiento.proc_nombre + ': Expedientes'"></h5>      
         <div class="text-center m-3">                           
-            <b-button 
-            :to="{ name: 'procedimientos', 
-                        params: {                             
-                            usuario: usuario,
-                            grado_modalidad: grado_modalidad                                
-                        } 
-                 }"
-                variant="outline-info"
-            > 
-                <b-icon icon="arrow-left-short"></b-icon>
-                Atras
+            <b-button :to="{ name: 'procedimientos', params: { grado_modalidad: grado_modalidad } }" variant="outline-info"> 
+                <b-icon icon="arrow-left-short"></b-icon> Atras
             </b-button>
         </div> 
         <b-card no-body>
@@ -163,14 +154,14 @@
 <script>
 export default {
   name: 'menu-procedimientos',   
-  props: {        
-    usuario: Object,
+  props: {            
     grado_modalidad: Object,
     grado_procedimiento: Object        
   },    
   data() {
     return {                               
         url: this.$root.API_URL,
+        usuario: this.$store.state.usuario,
         color_estados : this.$root.color_estados,
         estados : this.$root.estados,                                
         array_expediente : [],  
@@ -199,14 +190,23 @@ export default {
         isBusy: false,
     }
   },  
+  created() {         
+    if (this.grado_procedimiento != null) { //si se ha establecido id grado modalidad      
+      this.getExpedientes(this.grado_procedimiento.id, this.grado_procedimiento.tipo_rol)    
+    }
+    else {
+      this.$router.push({ name: 'home' }); 
+    }      
+  },
   methods: {            
-    getExpedientes(idgrado_procedimiento, tipo_rol) {                                     
-        let formData = this._toFormData({
-            idgrado_procedimiento: idgrado_procedimiento,                         
-            codi_usuario: this.usuario.codi_usuario,
-            tipo_usuario: this.usuario.tipo,
-            tipo_rol: tipo_rol
-        })
+    getExpedientes(idgrado_procedimiento, tipo_rol) {   
+        let formData = new FormData()
+
+        formData.append('idgrado_procedimiento', idgrado_procedimiento)
+        formData.append('codi_usuario', this.usuario.codi_usuario)  
+        formData.append('tipo_usuario', this.usuario.tipo)  
+        formData.append('tipo_rol', tipo_rol)  
+        
         this.toggleBusy()
 
         this.axios.post(`${this.url}/Expediente/getList`, formData)
@@ -216,16 +216,17 @@ export default {
                 this.totalRows = this.array_expediente.length;                     
             }
             else {
-                //console.log(response.data.message)
+                console.log(response.data.message)
             }
             this.toggleBusy()
         })            
     },
-    getExpedientesEnviados(idgrado_procedimiento) {             
-        let formData = this._toFormData({
-            idusuario: this.usuario.id,
-            idgradproc_origen: idgrado_procedimiento            
-        })
+    getExpedientesEnviados(idgrado_procedimiento) {     
+        let formData = new FormData()
+
+        formData.append('idusuario', this.usuario.id)
+        formData.append('idgradproc_origen', idgrado_procedimiento)          
+       
         this.toggleBusy()
 
         this.axios.post(`${this.url}/Movimiento/expedientes_enviados`, formData)
@@ -235,7 +236,7 @@ export default {
                 this.totalRows = this.array_exp_enviados.length;                     
             }
             else {
-               //console.log(response.data.message)
+                console.log(response.data.message)
             }
             this.toggleBusy()
         })
@@ -250,57 +251,38 @@ export default {
             centered: true
         }).then(value => {
             if (value) {
-                let me = this                               
-                let formData = this._toFormData({
-                    id: idmovimiento,
-                    idexpediente: idexpediente,
-                    idgradproc_origen: idgradproc_origen,
-                    fecha_ant: fecha_ant, //fecha de recepcion del expediente en movimiento anterior
-                    estado_expediente_ant: this.estados[etiqueta]
-                })                                    
+                let formData = new FormData()
 
+                formData.append('id', idmovimiento)
+                formData.append('idexpediente', idexpediente)    
+                formData.append('idgradproc_origen', idgradproc_origen)    
+                formData.append('fecha_ant', fecha_ant) //fecha de recepcion del expediente en movimiento anterior   
+                formData.append('estado_expediente_ant', this.estados[etiqueta])                           
+                
                 this.axios.post(`${this.url}/Movimiento/deshacer`, formData)
-                .then(function(response) {                                                                             
+                .then(response => {                                                                             
                     if (!response.data.error) {
-                        me.$root.mostrarNotificacion('Éxito!', 'success', 5000, 'done', response.data.message, 'bottom-right')
-                        me.getExpedientesEnviados(idgradproc_origen)
+                        this.$root.mostrarNotificacion('Éxito!', 'success', 5000, 'done', response.data.message, 'bottom-right')
+                        this.getExpedientesEnviados(idgradproc_origen)
                     }
                     else {                           
-                        me.$root.mostrarNotificacion('Error!', 'danger', 5000, 'error_outline', response.data.message, 'bottom-right')
+                        this.$root.mostrarNotificacion('Error!', 'danger', 5000, 'error_outline', response.data.message, 'bottom-right')
                     }
                 }) 
             }                   
         })              
-    },                
-    _toFormData(obj) {
-        var fd = new FormData()
-
-        for (var i in obj) {
-            fd.append(i, obj[i])
-        }
-
-        return fd
-    },         
-    onFiltered(filteredItems) {
-        // Trigger pagination to update the number of buttons/pages due to filtering
-        this.totalRows = filteredItems.length
-        this.currentPage = 1
     },
     toggleBusy() {
         this.isBusy = !this.isBusy
-    },
+    },                         
+    onFiltered(filteredItems) {        
+        this.totalRows = filteredItems.length
+        this.currentPage = 1
+    },    
     _countDownChanged(dismissCountDown) {
         this.dismissCountDown = dismissCountDown
     },               
-  },
-  mounted: function() {         
-    if (this.grado_procedimiento != null) { //si se ha establecido id grado modalidad      
-      this.getExpedientes(this.grado_procedimiento.id, this.grado_procedimiento.tipo_rol)    
-    }
-    else {
-      this.$router.push({ name: 'home' }); 
-    }      
-  },
+  }  
 }
 </script>
 
