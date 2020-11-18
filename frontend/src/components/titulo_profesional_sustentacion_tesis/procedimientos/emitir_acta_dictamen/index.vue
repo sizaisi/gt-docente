@@ -26,7 +26,7 @@
         :grado_modalidad="grado_modalidad"
         :grado_procedimiento="grado_procedimiento"
         :usuario="usuario"               
-        :expediente="expediente"
+        :idexpediente="expediente.id"
         :graduando="graduando"
         :ruta="ruta_seleccionada"
         :movimiento="movimiento"

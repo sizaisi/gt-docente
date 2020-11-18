@@ -6,13 +6,7 @@ require_once '../../utils/functions.php';
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 	/************************ VARIABLES DE FORMULARIO *********************/
 	$expediente = json_decode($_POST['expediente']);		
-	$graduando = json_decode($_POST['graduando']);
-	//$fecha_sesion = $_POST['fecha_sesion'];
-	//$fecha_sustentacion = $_POST['fecha_sustentacion'];
-	//$hora_sustentacion = $_POST['hora_sustentacion'];
-	$fecha_sesion = '2020-05-20';
-	$fecha_sustentacion = '2020-05-25';
-	$hora_sustentacion = '10:00';
+	$graduando = json_decode($_POST['graduando']);	
 	
 	//$array_jurado = json_decode($_POST['array_jurado'], true);	
 	$array_jurado = json_decode($_POST['jurados'], true);
@@ -85,7 +79,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 	$pdf->Ln(); 	
 	$pdf->SetFont('helvetica','',12);
 	$pdf->setCellHeightRatio(2);
-	$pdf->writeHTMLCell(150, '', 30, '', 'Reunidos en sesión de fecha, <b>'.date("d/m/Y", strtotime($fecha_sesion)).'</b> con el objeto de <b>DICTAMINAR</b> la tesis titulada: <b>'.$expediente->titulo.'</b>', 0, 0, 0, true, 'J', true); 
+	$pdf->writeHTMLCell(150, '', 30, '', 'Reunidos en sesión de fecha, <b>'.date("d/m/Y", strtotime($expediente->fecha_sesion_jurado)).'</b> con el objeto de <b>DICTAMINAR</b> la tesis titulada: <b>'.$expediente->titulo.'</b>', 0, 0, 0, true, 'J', true); 
 	$pdf->Ln(); 
 	$pdf->writeHTMLCell(150, '', 30, '', 'Presentado por Don(ña): <b>'.$graduando->apell_nombres.'</b>.', 0, 0, 0, true, 'J', true); 
 	$pdf->Ln(); 
@@ -93,7 +87,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 	$pdf->Ln(); 
 	$pdf->writeHTMLCell(150, '', 30, '', '<b>SE ACORDÓ:</b>', 0, 0, 0, true, 'J', true); 
 	$pdf->Ln(); 
-	$pdf->writeHTMLCell(150, '', 30, '', 'Dictaminar FAVORABLE la Tesis titulada: <b>'.$expediente->titulo.'.</b> y por tanto señalar la fecha de SUSTENTACION al Sr.(ta). <b>'.$graduando->apell_nombres.'</b> para optar por el título Profesional de <>INGENIERO EN SISTEMAS</b>, el <b>'.fecha_extendida($fecha_sustentacion).'</b> a horas <b>'.$hora_sustentacion.'</b>, con el jurado presidido por el <b>DR. '.$presidente.'</b>.', 0, 0, 0, true, 'J', true); 
+	$pdf->writeHTMLCell(150, '', 30, '', 'Dictaminar FAVORABLE la Tesis titulada: <b>'.$expediente->titulo.'.</b> y por tanto señalar la fecha de SUSTENTACION al Sr.(ta). <b>'.$graduando->apell_nombres.'</b> para optar por el título Profesional de <>INGENIERO EN SISTEMAS</b>, el <b>'.fecha_extendida($expediente->fecha_sustentacion).'</b> a horas <b>'.$expediente->hora_sustentacion.'</b>, con el jurado presidido por el <b>DR. '.$presidente.'</b>.', 0, 0, 0, true, 'J', true); 
 	$pdf->Ln();
 	$pdf->writeHTMLCell(150, '', 30, '', '<br>En fé de lo cual firmamos a los '.dia_actual().' días del mes de '.mes_actual().' del año '.anio_actual().'<br><br>', 0, 0, 0, true, 'J', true); 
 	$pdf->Ln(); 

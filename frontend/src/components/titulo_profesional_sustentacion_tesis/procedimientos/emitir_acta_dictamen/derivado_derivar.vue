@@ -8,18 +8,57 @@
                     active-nav-item-class="font-weight-bold text-uppercase text-danger"   
                     style="min-height: 250px"                        
                 >   
-                    <b-tab title="1. Generar documento" title-item-class="disabledTab" :disabled="tabIndex2 < 0">
+                    <b-tab title="1. Información de dictamen" title-item-class="disabledTab" :disabled="tabIndex2 < 0">
+                        <b-row>
+                            <b-col>
+                                <b-form-group                                                                        
+                                    label="Fecha de sesión de jurado:"
+                                    label-for="input-1"                                    
+                                >
+                                    <b-form-input id="input-1" v-model="expediente.fecha_sesion_jurado" readonly class="text-center"></b-form-input>
+                                </b-form-group>
+                            </b-col>
+                            <b-col>
+                                <b-form-group                                                                       
+                                    label="Fecha de sustentación:"
+                                    label-for="input-2"                                    
+                                >
+                                    <b-form-input id="input-2" v-model="expediente.fecha_sustentacion" readonly class="text-center"></b-form-input>
+                                </b-form-group>
+                            </b-col>
+                            <b-col>
+                                <b-form-group                                                                      
+                                    label="Hora de sustentación:"
+                                    label-for="input-3"                                    
+                                >
+                                    <b-form-input id="input-3" v-model="expediente.hora_sustentacion" readonly class="text-center"></b-form-input>
+                                </b-form-group>
+                            </b-col>
+                        </b-row>
+                        <info_acta_dictamen 
+                            :expediente="expediente" 
+                            :fecha_sesion_jurado="expediente.fecha_sesion_jurado"
+                            :fecha_sustentacion="expediente.fecha_sustentacion"
+                            :hora_sustentacion="expediente.hora_sustentacion"
+                            @updateDataFromChild="actualizarInfoDictamen"
+                        /> 
+                        <br>                        
+                        <div v-if="errors.length" class="alert alert-danger" role="alert">
+                            <ul><li v-for="(error, i) in errors" :key="i">{{ error }}</li></ul>
+                        </div>                                  
+                    </b-tab>  
+                    <b-tab title="2. Generar documento" title-item-class="disabledTab" :disabled="tabIndex2 < 1">                        
                         <generacion_documento                                        
                             :expediente="expediente"  
                             :graduando="graduando"                          
                             :asesor="asesor"  
                             :jurados="array_jurado_confirmado"                          
                             nombre_archivo_pdf="acta_dictamen.php"
-                            boton_nombre="Acta dictamen"
+                            boton_nombre="Acta de dictamen"
                             ref="documentos"
                         />                      
                     </b-tab>  
-                    <b-tab title="2. Añadir documento" title-item-class="disabledTab" :disabled="tabIndex2 < 1">
+                    <b-tab title="3. Añadir documento" title-item-class="disabledTab" :disabled="tabIndex2 < 2">
                         <documentos               
                             :expediente="expediente"
                             :idgrado_proc="grado_procedimiento.id"
@@ -33,8 +72,8 @@
                             <ul><li v-for="(error, i) in errors" :key="i">{{ error }}</li></ul>
                         </div>       
                     </b-tab>                   
-                    <b-tab :title="'3. '+ruta.etiqueta.charAt(0).toUpperCase()+ruta.etiqueta.slice(1)+' expediente'" 
-                        title-item-class="disabledTab" :disabled="tabIndex2 < 2">
+                    <b-tab :title="'4. '+ruta.etiqueta.charAt(0).toUpperCase()+ruta.etiqueta.slice(1)+' expediente'" 
+                        title-item-class="disabledTab" :disabled="tabIndex2 < 3">
                         <movimiento_expediente
                             :grado_modalidad="grado_modalidad"
                             :grado_procedimiento="grado_procedimiento"                        
@@ -49,7 +88,7 @@
             <div class="text-center">
                 <b-button-group class="mt-3">
                     <b-button class="mr-1" @click="prevTab" :disabled="tabIndex == 0">Anterior</b-button>
-                    <b-button @click="nextTab" :disabled="tabIndex == 2">Siguiente</b-button>
+                    <b-button @click="nextTab" :disabled="tabIndex == 3">Siguiente</b-button>
                 </b-button-group>     
             </div> 
         </template>
@@ -61,6 +100,7 @@
     </b-card>       
 </template>
 <script>
+import info_acta_dictamen from '../../recursos/info_acta_dictamen.vue'
 import generacion_documento from '../../recursos/generacion_documento.vue'
 import documentos from '../../recursos/documentos.vue'
 import movimiento_expediente from '../../recursos/movimiento_expediente.vue'
@@ -70,13 +110,14 @@ export default {
     props: {
         grado_modalidad: Object,
         grado_procedimiento: Object,    
-        usuario: Object,               
-        expediente: Object,
+        usuario: Object,     
+        idexpediente: String,                 
         graduando: Object,        
         ruta: Object,
         movimiento: Object
     },
     components: {    
+        info_acta_dictamen,
         generacion_documento,
         documentos,
         movimiento_expediente,           
@@ -86,11 +127,19 @@ export default {
             url: this.$root.API_URL,      
             tabIndex: 0,         
             tabIndex2: 0, 
+            expediente: {},           
             array_jurado_confirmado : [],
             existeRecursoRutaVecinas : false, 
-            asesor : null,  //object                                         
+            asesor : null,  //object    
+            modalShow: false,                                     
             errors: [], 
         }
+    },
+    created() {             
+        this.verificarRecursoRutasVecinas()           
+        this.getJuradosConfirmados()
+        this.getAsesor()                   
+        this.getExpediente()
     },
     methods: {            
         prevTab() {
@@ -101,13 +150,17 @@ export default {
         nextTab() {      
             this.errors = [] 
             let pasar = false              
-                            
+
             if (this.tabIndex == 0) {
+                pasar = this.validarTab0()
+            }         
+                            
+            if (this.tabIndex == 1) {
                 pasar = true
             }         
             
-            if (this.tabIndex == 1) {
-                pasar = this.validarTab1()
+            if (this.tabIndex == 2) {
+                pasar = this.validarTab2()
             }         
 
             if (pasar) {
@@ -117,7 +170,21 @@ export default {
                 })  
             }              
         },   
-        validarTab1() {        
+        validarTab0() {        
+            if (this.expediente.fecha_sesion_jurado == null ||
+                this.expediente.fecha_sustentacion == null ||
+                this.expediente.hora_sustentacion == null
+            ) { 
+                this.errors.push("Debe ingresar información de dictamen.")
+            }                        
+
+            if (!this.errors.length) {
+                return true
+            }      
+
+            return false
+        },
+        validarTab2() {        
             if (this.$refs.documentos.cantidadDocumentos() == 0) { //referencia al metodo del componente hijo
                 this.errors.push("Debe registrar documentos para el expediente seleccionado.")
             }                        
@@ -132,7 +199,7 @@ export default {
         verificarRecursoRutasVecinas() { 
             let me = this      
             var formData = this._toFormData({
-                idexpediente: this.expediente.id,
+                idexpediente: this.idexpediente,
                 idgrado_proc: this.grado_procedimiento.id,
                 idusuario: this.usuario.id,                
                 idruta: this.ruta.id
@@ -148,10 +215,24 @@ export default {
                 }
             })  
         },   
+        getExpediente() {     
+            let formData = new FormData()
+            formData.append('idexpediente', this.idexpediente)
+
+            this.axios
+                .post(`${this.url}/Expediente/getExpById`, formData)
+                .then(response => {
+                    if (!response.data.error) {
+                        this.expediente = response.data.expediente;                        
+                    } else {
+                        console.log(response.data.message)
+                    }
+                });
+        },        
         getAsesor() {
             let me = this      
             var formData = this._toFormData({
-                idexpediente: this.expediente.id
+                idexpediente: this.idexpediente
             })
 
             this.axios.post(`${this.url}/Persona/get_asesor_expediente`, formData)
@@ -167,7 +248,7 @@ export default {
         getJuradosConfirmados() { // para obtener los jurados asignados por el usuario
             let me = this      
             let formData = this._toFormData({
-                idexpediente: this.expediente.id,                
+                idexpediente: this.idexpediente
             })
 
             this.axios.post(`${this.url}/Persona/jurado_confirmado_expediente`, formData)
@@ -180,6 +261,9 @@ export default {
                 }
             })   
         },           
+        actualizarInfoDictamen() {
+            this.getExpediente()
+        },
         _toFormData(obj) {
             var fd = new FormData()
 
@@ -189,12 +273,7 @@ export default {
 
             return fd
         },                               
-    },
-    mounted: function() {             
-        this.verificarRecursoRutasVecinas()           
-        this.getJuradosConfirmados()
-        this.getAsesor()                   
-    },     
+    },         
 }
 </script>
 <style scoped>

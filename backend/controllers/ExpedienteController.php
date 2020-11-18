@@ -45,7 +45,7 @@ class ExpedienteController {
                 $result = $expediente->getExpediente();
         
                 echo json_encode($result);  
-        }
+        }       
 
         public function getURL() {
         
@@ -68,5 +68,19 @@ class ExpedienteController {
                 $result = $expediente->actualizar_url();
         
                 echo json_encode($result);  
-	}
+        }
+        
+        public function upd_tp_st_acta_dictamen() {
+
+                $expediente = new Expediente();
+                
+                $expediente->setId($_POST['idexpediente']);   
+                $expediente->setFechaSesionJurado($_POST['fecha_sesion_jurado']);                                                                
+                $expediente->setFechaSustentacion($_POST['fecha_sustentacion']);                    
+                $expediente->setHoraSustentacion($_POST['hora_sustentacion']);
+
+                $result = $expediente->upd_tp_st_acta_dictamen();
+        
+                echo json_encode($result);
+        }
 }

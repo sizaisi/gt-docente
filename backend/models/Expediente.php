@@ -3,6 +3,9 @@
 class Expediente {
 	private $id;
 	private $url_repo;
+	private $fecha_sesion_jurado;
+	private $fecha_sustentacion;
+	private $hora_sustentacion;
 
 	private $conn;
 
@@ -20,6 +23,30 @@ class Expediente {
 
 	function setUrlRepo($url_repo) {
 		$this->url_repo = $url_repo;
+	}
+
+	function getFechaSesionJurado() {
+		return $this->fecha_sesion_jurado;
+	}
+
+	function setFechaSesionJurado($fecha_sesion_jurado) {
+		$this->fecha_sesion_jurado = $fecha_sesion_jurado;
+	}
+
+	function getFechaSustentacion() {
+		return $this->fecha_sustentacion;
+	}
+
+	function setFechaSustentacion($fecha_sustentacion) {
+		$this->fecha_sustentacion = $fecha_sustentacion;
+	}
+
+	function getHoraSustentacion() {
+		return $this->hora_sustentacion;
+	}
+
+	function setHoraSustentacion($hora_sustentacion) {
+		$this->hora_sustentacion = $hora_sustentacion;
 	}
 
 	public function __construct() {
@@ -227,6 +254,22 @@ class Expediente {
   
 		return $result;
 	 }  
+
+	 public function getInfoDictamen() {  
+		$result = array('error' => false);  
+		
+		$sql = "SELECT fecha_sesion_jurado, fecha_sustentacion, hora_sustentacion
+				FROM gt_expediente 
+				WHERE id = $this->id";
+  
+		$result_query = mysqli_query($this->conn, $sql);
+  
+		$row = $result_query->fetch_assoc();      
+  
+		$result['info_dictamen'] = $row; 
+  
+		return $result;
+	 }  
 	 
 	 public function actualizar_url(){
         $result = array('error' => false);
@@ -241,6 +284,29 @@ class Expediente {
         else {
             $result['error'] = true;
             $result['message'] = "No se pudo actualizar el URL.";
+        }
+
+        return $result;   
+	}
+	
+	public function upd_tp_st_acta_dictamen(){
+        $result = array('error' => false);
+
+        $sql = "UPDATE 
+				gt_expediente 
+				SET fecha_sesion_jurado = '$this->fecha_sesion_jurado',
+					fecha_sustentacion = '$this->fecha_sustentacion',
+					hora_sustentacion = '$this->hora_sustentacion' 
+				WHERE id = $this->id";
+
+        $result_query = mysqli_query($this->conn, $sql);
+
+        if ($result_query) {
+            $result['message'] = "Informacón de dictamen actualizado con éxito.";
+        }
+        else {
+            $result['error'] = true;
+            $result['message'] = "No se pudo actualizar la información de dictamen.";
         }
 
         return $result;   
