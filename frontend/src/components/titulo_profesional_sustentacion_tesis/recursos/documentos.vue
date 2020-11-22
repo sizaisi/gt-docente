@@ -156,6 +156,9 @@ export default {
       opcion_documento: null,
     };
   },
+  created() {
+    this.getDocumento();
+  },
   methods: {
     cantidadDocumentos() {
       return this.array_documento.length;
@@ -165,27 +168,23 @@ export default {
       this.nombre_documento = nombre_documento;
       this.modal = 1;
     },
-    getDocumento() {
-      // para mostrar una lista de documentos del procedimiento
-      let me = this;
-      let formData = this._toFormData({
-        idgrado_proc: this.idgrado_proc,
-        idusuario: this.idusuario,
-        idexpediente: this.expediente.id,
-      });
+    getDocumento() {            
+      let formData = new FormData()
+      formData.append('idexpediente', this.expediente.id)
+      formData.append('idusuario', this.idusuario)
+      formData.append('idgrado_proc', this.idgrado_proc)      
 
       this.axios
         .post(`${this.url}/Archivo/get`, formData)
-        .then(function (response) {
+        .then(response => {
           if (!response.data.error) {
-            me.array_documento = response.data.array_documento;
+            this.array_documento = response.data.array_documento;
           } else {
-            //console.log(response.data.message)
+            console.log(response.data.message)
           }
         });
     },
-    registrarDocumento() {
-      let me = this;
+    registrarDocumento() {      
       let documento;
 
       if (this.nombre_asignado != null) {
@@ -194,14 +193,13 @@ export default {
         documento = this.opcion_documento;
       }
 
-      let formData = this._toFormData({
-        idexpediente: this.expediente.id,
-        idgrado_proc: this.idgrado_proc,
-        idusuario: this.idusuario,
-        idruta: this.ruta.id,
-        nombre_asignado: documento,
-        file: this.file,
-      });
+      let formData = new FormData()
+      formData.append('idexpediente', this.expediente.id)
+      formData.append('idgrado_proc', this.idgrado_proc)
+      formData.append('idusuario', this.idusuario)
+      formData.append('idruta', this.ruta.id)
+      formData.append('nombre_asignado', documento)
+      formData.append('file', this.file)
       this.estaOcupado = true;
 
       this.axios
@@ -210,11 +208,10 @@ export default {
             "Content-Type": "multipart/form-data",
           },
         })
-        .then(function (response) {
-          console.log(response);
-          me.resetearValores();
+        .then(response => {          
+          this.resetearValores();
           if (!response.data.error) {
-            me.$root.mostrarNotificacion(
+            this.$root.mostrarNotificacion(
               "Éxito!",
               "success",
               4000,
@@ -222,9 +219,9 @@ export default {
               response.data.message,
               "bottom-right"
             );
-            me.getDocumento();
+            this.getDocumento();
           } else {
-            me.$root.mostrarNotificacion(
+            this.$root.mostrarNotificacion(
               "Error!",
               "danger",
               4000,
@@ -235,11 +232,9 @@ export default {
           }
         });
     },
-    eliminarDocumento(iddocumento) {
-      let me = this;
-      let formData = this._toFormData({
-        id: iddocumento,
-      });
+    eliminarDocumento(iddocumento) {      
+      let formData = new FormData()
+      formData.append('id', iddocumento)
 
       this.$bvModal
         .msgBoxConfirm("¿Esta seguro de eliminar el documento?", {
@@ -253,10 +248,10 @@ export default {
           if (value) {
             this.axios
               .post(`${this.url}/Archivo/delete`, formData)
-              .then(function (response) {
-                me.resetearValores();
+              .then(response => {
+                this.resetearValores();
                 if (!response.data.error) {
-                  me.$root.mostrarNotificacion(
+                  this.$root.mostrarNotificacion(
                     "Éxito!",
                     "success",
                     4000,
@@ -264,9 +259,9 @@ export default {
                     response.data.message,
                     "bottom-right"
                   );
-                  me.getDocumento();
+                  this.getDocumento();
                 } else {
-                  me.$root.mostrarNotificacion(
+                  this.$root.mostrarNotificacion(
                     "Error!",
                     "danger",
                     4000,
@@ -284,20 +279,8 @@ export default {
       this.errors = [];
       this.opcion_documento = null;
       this.estaOcupado = false;
-    },
-    _toFormData(obj) {
-      var fd = new FormData();
-
-      for (var i in obj) {
-        fd.append(i, obj[i]);
-      }
-
-      return fd;
-    },
-  },
-  mounted: function () {
-    this.getDocumento();
-  },
+    },    
+  }  
 };
 </script>
 <style scoped>

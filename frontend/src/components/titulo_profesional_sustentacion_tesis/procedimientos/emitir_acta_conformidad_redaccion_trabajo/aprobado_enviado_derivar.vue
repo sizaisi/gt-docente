@@ -92,6 +92,11 @@ export default {
             errors: [], 
         }
     },
+    created() {             
+        this.verificarRecursoRutasVecinas()           
+        this.getJuradosConfirmados()
+        this.getAsesor()                   
+    },     
     methods: {            
         prevTab() {
             this.errors = [] 
@@ -128,36 +133,32 @@ export default {
 
             return false
         },
-        //verifica si las rutas vecinas de este procedimiento se registro observaciones, archivos o personas sin confirmar
-        verificarRecursoRutasVecinas() { 
-            let me = this      
-            var formData = this._toFormData({
-                idexpediente: this.expediente.id,
-                idgrado_proc: this.grado_procedimiento.id,
-                idusuario: this.usuario.id,                
-                idruta: this.ruta.id
-            })
+        verificarRecursoRutasVecinas() {
+            let formData = new FormData();
+            formData.append('idexpediente', this.expediente.id);
+            formData.append('idgrado_proc', this.grado_procedimiento.id);
+            formData.append('idusuario', this.usuario.id);
+            formData.append('idruta', this.ruta.id);
 
-            this.axios.post(`${this.url}/Recurso/verify`, formData)
-            .then(function(response) {                                
-                if (!response.data.error) {                
-                    me.existeRecursoRutaVecinas = response.data.existeRecursoRutaVecinas
-                }
-                else {                
-                    console.log(response.data.message)      
-                }
-            })  
-        },   
+            this.axios
+                .post(`${this.url}/Recurso/verify`, formData)
+                .then((response) => {
+                    if (!response.data.error) {
+                        this.existeRecursoRutaVecinas =
+                        response.data.existeRecursoRutaVecinas;
+                    } else {
+                        console.log(response.data.message);
+                    }
+                });
+        },    
         getAsesor() {
-            let me = this      
-            var formData = this._toFormData({
-                idexpediente: this.expediente.id
-            })
+            let formData = new FormData()
+            formData.append('idexpediente', this.expediente.id)
 
             this.axios.post(`${this.url}/Persona/get_asesor_expediente`, formData)
-            .then(function(response) {                
+            .then(response => {                
                 if (!response.data.error) {                
-                    me.asesor = response.data.asesor
+                    this.asesor = response.data.asesor
                 }
                 else {                
                     console.log(response.data.message)      
@@ -165,36 +166,20 @@ export default {
             })    
         },    
         getJuradosConfirmados() { // para obtener los jurados asignados por el usuario
-            let me = this      
-            let formData = this._toFormData({
-                idexpediente: this.expediente.id,                
-            })
+            let formData = new FormData()
+            formData.append('idexpediente', this.expediente.id)
 
             this.axios.post(`${this.url}/Persona/jurado_confirmado_expediente`, formData)
-            .then(function(response) {            
+            .then(response => {            
                 if (!response.data.error) {
-                    me.array_jurado_confirmado = response.data.array_jurado_confirmado
+                    this.array_jurado_confirmado = response.data.array_jurado_confirmado
                 }
                 else {
                     console.log(response.data.message)      
                 }
             })   
-        },           
-        _toFormData(obj) {
-            var fd = new FormData()
-
-            for (var i in obj) {
-            fd.append(i, obj[i])
-            }
-
-            return fd
-        },                               
-    },
-    mounted: function() {             
-        this.verificarRecursoRutasVecinas()           
-        this.getJuradosConfirmados()
-        this.getAsesor()                   
-    },     
+        },                         
+    }    
 }
 </script>
 <style scoped>

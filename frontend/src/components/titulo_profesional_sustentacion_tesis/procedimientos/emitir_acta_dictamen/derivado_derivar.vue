@@ -195,26 +195,24 @@ export default {
 
             return false
         },
-        //verifica si las rutas vecinas de este procedimiento se registro observaciones, archivos o personas sin confirmar
-        verificarRecursoRutasVecinas() { 
-            let me = this      
-            var formData = this._toFormData({
-                idexpediente: this.idexpediente,
-                idgrado_proc: this.grado_procedimiento.id,
-                idusuario: this.usuario.id,                
-                idruta: this.ruta.id
-            })
+        verificarRecursoRutasVecinas() {
+            let formData = new FormData();
+            formData.append('idexpediente', this.expediente.id);
+            formData.append('idgrado_proc', this.grado_procedimiento.id);
+            formData.append('idusuario', this.usuario.id);
+            formData.append('idruta', this.ruta.id);
 
-            this.axios.post(`${this.url}/Recurso/verify`, formData)
-            .then(function(response) {                                
-                if (!response.data.error) {                
-                    me.existeRecursoRutaVecinas = response.data.existeRecursoRutaVecinas
-                }
-                else {                
-                    console.log(response.data.message)      
-                }
-            })  
-        },   
+            this.axios
+                .post(`${this.url}/Recurso/verify`, formData)
+                .then((response) => {
+                    if (!response.data.error) {
+                        this.existeRecursoRutaVecinas =
+                        response.data.existeRecursoRutaVecinas;
+                    } else {
+                        console.log(response.data.message);
+                    }
+                });
+        },  
         getExpediente() {     
             let formData = new FormData()
             formData.append('idexpediente', this.idexpediente)
@@ -230,15 +228,13 @@ export default {
                 });
         },        
         getAsesor() {
-            let me = this      
-            var formData = this._toFormData({
-                idexpediente: this.idexpediente
-            })
+            let formData = new FormData()
+            formData.append('idexpediente', this.idexpediente)
 
             this.axios.post(`${this.url}/Persona/get_asesor_expediente`, formData)
-            .then(function(response) {                
+            .then(response => {                
                 if (!response.data.error) {                
-                    me.asesor = response.data.asesor
+                    this.asesor = response.data.asesor
                 }
                 else {                
                     console.log(response.data.message)      
@@ -246,15 +242,13 @@ export default {
             })    
         },    
         getJuradosConfirmados() { // para obtener los jurados asignados por el usuario
-            let me = this      
-            let formData = this._toFormData({
-                idexpediente: this.idexpediente
-            })
+            let formData = new FormData()
+            formData.append('idexpediente', this.idexpediente)
 
             this.axios.post(`${this.url}/Persona/jurado_confirmado_expediente`, formData)
-            .then(function(response) {            
+            .then(response => {            
                 if (!response.data.error) {
-                    me.array_jurado_confirmado = response.data.array_jurado_confirmado
+                    this.array_jurado_confirmado = response.data.array_jurado_confirmado
                 }
                 else {
                     console.log(response.data.message)      
@@ -263,16 +257,7 @@ export default {
         },           
         actualizarInfoDictamen() {
             this.getExpediente()
-        },
-        _toFormData(obj) {
-            var fd = new FormData()
-
-            for (var i in obj) {
-            fd.append(i, obj[i])
-            }
-
-            return fd
-        },                               
+        },                                    
     },         
 }
 </script>

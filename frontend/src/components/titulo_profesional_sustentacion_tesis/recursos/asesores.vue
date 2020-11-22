@@ -77,25 +77,27 @@ export default {
             errors: [],                                                                      
         }
     },
+    created() {          
+        this.getAsesoresAnteriores()         
+        this.getAsesor()           
+        this.getCandidatosAsesores()                 
+    },
     methods: {     
         existeAsesor() {
-
             if (this.asesor != null) {
                 return true
             }
             
             return false
         },                
-        getCandidatosAsesores() { // para mostrar una lista de asesores por facultad para que ser asignado
-            let me = this       
-            let formData = this._toFormData({
-                idexpediente: this.expediente.id
-            })
+        getCandidatosAsesores() {
+            let formData = new FormData()
+            formData.append('idexpediente', this.expediente.id)
 
             this.axios.post(`${this.url}/Usuario/getDocentes`, formData)
-            .then(function(response) {
+            .then(response => {
                 if (!response.data.error) {
-                    me.array_docente = response.data.array_docente                                                                                                
+                    this.array_docente = response.data.array_docente                                                                                                
                 }
                 else {
                     console.log(response.data.message)
@@ -103,15 +105,13 @@ export default {
             })
         },
         getAsesoresAnteriores() {
-            let me = this      
-            var formData = this._toFormData({
-                idexpediente: this.expediente.id
-            })
+            let formData = new FormData()
+            formData.append('idexpediente', this.expediente.id)
 
             this.axios.post(`${this.url}/Persona/get_all_asesores`, formData)
-            .then(function(response) {                
+            .then(response => {                
                 if (!response.data.error) {                
-                    me.array_asesores_ant = response.data.array_asesor
+                    this.array_asesores_ant = response.data.array_asesor
                     console.log(me.array_asesores_ant)
                 }
                 else {                
@@ -120,17 +120,16 @@ export default {
             })    
         },  
         getAsesor() {
-            let me = this                  
-            let formData = this._toFormData({
-                idexpediente: this.expediente.id,
-                idgrado_proc: this.idgrado_proc,
-                idusuario: this.idusuario,                                
-            })
+            let me = this
+            let formData = new FormData()
+            formData.append('idexpediente', this.expediente.id)                  
+            formData.append('idgrado_proc', this.idgrado_proc)                  
+            formData.append('idusuario', this.idusuario)                              
 
             this.axios.post(`${this.url}/Persona/get_asesor`, formData)
-            .then(function(response) {                 
+            .then(response => {                 
                 if (!response.data.error) {                
-                    me.asesor = response.data.asesor
+                    this.asesor = response.data.asesor
                 }
                 else {                
                     console.log(response.data.message)      
@@ -154,37 +153,33 @@ export default {
               this.errors.push("El docente seleccionado denego la asesoria del expediente seleccionado.")
               return
             } 
-            
-            let me = this            
-            let formData = this._toFormData({              
-              idexpediente: this.expediente.id,
-              idgrado_proc: this.idgrado_proc,
-              idusuario: this.idusuario,                  
-              idruta: this.ruta.id,
-              iddocente: this.docente_seleccionado.id,
-              tipo: 'asesor'
-            })           
+
+            let formData = new FormData()
+            formData.append('idexpediente', this.expediente.id)
+            formData.append('idgrado_proc', this.idgrado_proc)
+            formData.append('idusuario', this.idusuario)
+            formData.append('idruta', this.ruta.id)
+            formData.append('iddocente', this.docente_seleccionado.id)
+            formData.append('tipo', 'asesor')                                
 
             this.axios.post(`${this.url}/Persona/store`, formData)
-                .then(function(response) {                                                 
-                    me.resetearValores()                                   
+                .then(response => {                                                 
+                    this.resetearValores()                                   
                     if (!response.data.error) {                        
-                        me.$root.mostrarNotificacion('Éxito!', 'success', 4000, 'done', response.data.message, 'bottom-right')
-                        me.getAsesor()                           
+                        this.$root.mostrarNotificacion('Éxito!', 'success', 4000, 'done', response.data.message, 'bottom-right')
+                        this.getAsesor()                           
                     }
                     else {
-                        me.$root.mostrarNotificacion('Error!', 'danger', 4000, 'error_outline', response.data.message, 'bottom-right')                                                          
+                        this.$root.mostrarNotificacion('Error!', 'danger', 4000, 'error_outline', response.data.message, 'bottom-right')                                                          
                     }                      
                 })      
         },
-        eliminarAsesor(id) {        
-            let me = this        
-            let formData = this._toFormData({
-              id: id,          
-              idexpediente: this.expediente.id,
-              idgrado_proc: this.idgrado_proc,              
-              tipo: 'asesor'    
-            })  
+        eliminarAsesor(id) {                   
+            let formData = new FormData()
+            formData.append('id', id)
+            formData.append('idexpediente', this.expediente.id)
+            formData.append('idgrado_proc', this.idgrado_proc)
+            formData.append('tipo', 'asesor')
 
             this.$bvModal.msgBoxConfirm(
                 '¿Esta seguro de eliminar el asesor seleccionado?', {
@@ -197,15 +192,15 @@ export default {
             .then(value => {
                 if (value) {        
                     this.axios.post(`${this.url}/Persona/delete`, formData)
-                    .then(function(response) {                                                   
-                        me.resetearValores()  
-                        me.asesor = null //docente nulo para obligar a agregar un docente
+                    .then(response => {                                                   
+                        this.resetearValores()  
+                        this.asesor = null //docente nulo para obligar a agregar un docente
                         if (!response.data.error) {
-                            me.$root.mostrarNotificacion('Éxito!', 'success', 4000, 'done', response.data.message, 'bottom-right')                          
-                            me.getAsesor()                            
+                            this.$root.mostrarNotificacion('Éxito!', 'success', 4000, 'done', response.data.message, 'bottom-right')                          
+                            this.getAsesor()                            
                         }
                         else {
-                            me.$root.mostrarNotificacion('Error!', 'danger', 4000, 'error_outline', response.data.message, 'bottom-right')
+                            this.$root.mostrarNotificacion('Error!', 'danger', 4000, 'error_outline', response.data.message, 'bottom-right')
                         }
                     })                
                 }
@@ -214,22 +209,8 @@ export default {
         resetearValores() {          
             this.docente_seleccionado = null                                                     
             this.errors = []               
-        },        
-        _toFormData(obj) {
-            var fd = new FormData()
-
-            for (var i in obj) {
-            fd.append(i, obj[i])
-            }
-
-            return fd
-        },      
-    },    
-    mounted: function() {          
-        this.getAsesoresAnteriores()         
-        this.getAsesor()           
-        this.getCandidatosAsesores()                 
-    },
+        },                
+    },        
 }
 </script>
 <style scoped>
@@ -247,3 +228,4 @@ export default {
         max-height: 150px;
     }
 </style>
+
