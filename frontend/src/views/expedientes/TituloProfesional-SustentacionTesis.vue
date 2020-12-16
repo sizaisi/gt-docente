@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="container" style="background-color: #fff; padding:20px;">
+    <div class="container-fluid" style="background-color: #fff; padding:20px;">
       <h5 class="text-center font-weight-bold text-uppercase text-danger" v-text="grado_procedimiento.proc_nombre"></h5>
       <p class="narrow text-center" v-text="grado_procedimiento.proc_descripcion"></p>
       <div class="text-center m-3">
@@ -9,16 +9,11 @@
         </b-button>
       </div>
       <b-card no-body>
-        <b-tabs card justified active-nav-item-class="font-weight-bold text-uppercase text-danger">
-          <b-tab title="Información de Expediente" active>
+        <b-tabs pills card vertical>
+          <b-tab title="Trámite" active>
             <b-card no-body>
-              <b-tabs pills card vertical>
-                <b-tab title="Expediente">                  
-                  <div class="mb-3">
-                    <h4 class="text-info text-center">
-                      <i class="fa fa-folder-open" aria-hidden="true"></i> Expediente
-                    </h4>
-                  </div>
+              <b-tabs card justified active-nav-item-class="font-weight-bold text-uppercase text-danger">
+                <b-tab title="Expediente">                                    
                   <b-card>                    
                     <div class="form-row">
                       <div class="form-group col-md-3">
@@ -42,12 +37,7 @@
                     </div>                    
                   </b-card>
                 </b-tab>
-                <b-tab title="Graduando">                  
-                  <div class="mb-3">
-                    <h4 class="text-info text-center">
-                      <i class="fa fa-user" aria-hidden="true"></i> Graduando
-                    </h4>
-                  </div>
+                <b-tab title="Graduando">                                    
                   <b-card>                    
                     <div class="form-row">
                       <div class="form-group col-md-3">
@@ -75,12 +65,7 @@
                     </div>                    
                   </b-card>
                 </b-tab>
-                <b-tab title="Documentos">                  
-                  <div class="mb-3">
-                    <h4 class="text-info text-center">
-                      <i class="fa fa-files-o" aria-hidden="true"></i> Archivos
-                    </h4>
-                  </div>
+                <b-tab title="Documentos">                                    
                   <form ref="show_file" :action="url_show_file" target="my-frame" method="post">
                     <input type="hidden" name="file_id" />
                   </form>
@@ -111,13 +96,10 @@
               </b-tabs>
             </b-card>
           </b-tab>
-          <b-tab title="Información de Procedencia">
+          <b-tab title="Procedencia">
             <b-card no-body>
-              <b-tabs pills card vertical>
-                <b-tab title="Estado de expediente">                  
-                  <div class="mb-3">
-                    <h4 class="text-info text-center">Estado de expediente</h4>
-                  </div>
+              <b-tabs card active-nav-item-class="font-weight-bold text-uppercase text-danger">
+                <b-tab title="Estado de expediente">                                    
                   <b-row class="justify-content-lg-center">
                     <b-col col lg="10">
                       <table class="table table-bordered table-borderless">
@@ -203,7 +185,7 @@
               </b-tabs>
             </b-card>
           </b-tab>
-          <b-tab title="Procesamiento de Expediente" v-if="movimiento != null">            
+          <b-tab title="Derivación" v-if="movimiento != null">            
             <component
               :is="nombre_componente"
               :grado_modalidad="grado_modalidad"
