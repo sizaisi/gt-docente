@@ -93,10 +93,7 @@ import movimiento_expediente from '../../recursos/movimiento_expediente.vue';
 
 export default {
   name: 'derivado-aprobar',
-  props: {
-    grado_modalidad: Object,
-    grado_procedimiento: Object,
-    usuario: Object,
+  props: {    
     expediente: Object,
     graduando: Object,
     ruta: Object,
@@ -110,17 +107,24 @@ export default {
   data() {
     return {
       url: this.$root.API_URL,
+      usuario: this.$store.getters.getUsuario,
+      grado_modalidad: this.$store.getters.getGradoModalidad,
+      grado_procedimiento: this.$store.getters.getGradoProcedimiento,
       tabIndex: 0,
-      tabIndex2: 0,
-      existeRecursoRutaVecinas: false,
+      tabIndex2: 0,      
       asesor: null, //object
       errors: [],
     };
   },
-  created() {
-    this.verificarRecursoRutasVecinas();
-    this.getAsesor();
+  computed: {
+      existeRecursoRutaVecinas() {
+          return this.$store.state.rutaVecinaActiva
+      }
   },
+  created() {                          
+      this.$store.dispatch("verificarRecursoRutasVecinas", this.ruta.id);           
+      this.getAsesor();
+  },   
   methods: {
     prevTab() {
       this.errors = [];
@@ -147,8 +151,7 @@ export default {
       }
     },
     validarTab1() {
-      if (this.$refs.documentos.cantidadDocumentos() == 0) {
-        //referencia al metodo del componente hijo
+      if (this.$refs.documentos.cantidadDocumentos() == 0) {        
         this.errors.push(
           'Debe registrar documentos para el expediente seleccionado.'
         );
@@ -159,25 +162,7 @@ export default {
       }
 
       return false;
-    },
-    verificarRecursoRutasVecinas() {
-      let formData = new FormData();
-      formData.append('idexpediente', this.expediente.id);
-      formData.append('idgrado_proc', this.grado_procedimiento.id);
-      formData.append('idusuario', this.usuario.id);
-      formData.append('idruta', this.ruta.id);
-
-      this.axios
-        .post(`${this.url}/Recurso/verify`, formData)
-        .then((response) => {
-          if (!response.data.error) {
-            this.existeRecursoRutaVecinas =
-              response.data.existeRecursoRutaVecinas;
-          } else {
-            console.log(response.data.message);
-          }
-        });
-    },
+    },    
     getAsesor() {
       let formData = new FormData();
       formData.append('idexpediente', this.expediente.id);

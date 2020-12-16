@@ -74,16 +74,26 @@ new Vue({
     estados : config.estados,
   },  
   methods: {         
-    mostrarNotificacion(titulo, color, tiempo, icono, mensaje, posicion) {
+    successAlert(message) {            
       this.$vs.notify({
-        title: titulo,
-        color: color,
-        time: tiempo,
-        icon: icono,
-        text: mensaje,
-        position: posicion,
-      })
+        title: 'Éxito!',
+        color: 'success',
+        time: 4000,
+        icon: 'done',
+        text: message,
+        position: 'bottom-right',
+      })     
     },
+    errorAlert(message) {      
+      this.$vs.notify({
+        title: 'Error!',
+        color: 'danger',
+        time: 4000,
+        icon: 'error_outline',
+        text: message,
+        position: 'bottom-right',
+      })
+    }
   },       
   router,
   store,    

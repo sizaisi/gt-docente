@@ -19,8 +19,7 @@ export default {
     data() {
       return {                               
         url: this.$root.API_URL,            
-        codi_usuario: null,               
-        usuario : null,              
+        codi_usuario: null,                                 
       }
     },
     created () {
@@ -46,8 +45,8 @@ export default {
         this.axios.post(`${this.url}/Usuario/getIdUsuario`, formData)
         .then(response => {                
             if (!response.data.error) {
-              this.usuario = response.data.usuario        
-              this.$store.dispatch('setUsuario', this.usuario)                           
+              let usuario = response.data.usuario        
+              this.$store.dispatch('setUsuario', usuario)                           
             }
             else {                                        
               console.log(response.data.message)            

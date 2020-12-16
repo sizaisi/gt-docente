@@ -16,14 +16,12 @@ const routes = [
   {
     path: '/expedientes/procedimientos',
     name: 'procedimientos',
-    component: require("./../views/expedientes/Procedimientos.vue").default,   
-    props: true  
+    component: require("./../views/expedientes/Procedimientos.vue").default,       
   },
   {
     path: '/expedientes/bandeja',
     name: 'bandeja',
-    component: require("./../views/expedientes/Bandeja.vue").default,   
-    props: true
+    component: require("./../views/expedientes/Bandeja.vue").default,       
   },
   {
     path: '/expedientes/info-expediente4',

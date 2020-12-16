@@ -1,22 +1,10 @@
 <template>
   <div>
     <div class="container" style="background-color: #fff; padding:20px;">
-      <h5
-        class="text-center font-weight-bold text-uppercase text-danger"
-        v-text="grado_procedimiento.proc_nombre"
-      ></h5>
+      <h5 class="text-center font-weight-bold text-uppercase text-danger" v-text="grado_procedimiento.proc_nombre"></h5>
       <p class="narrow text-center" v-text="grado_procedimiento.proc_descripcion"></p>
       <div class="text-center m-3">
-        <b-button
-          :to="{ name: 'bandeja', 
-                      params: {                             
-                          usuario: usuario,
-                          grado_modalidad: grado_modalidad,
-                          grado_procedimiento: grado_procedimiento,                               
-                      } 
-                }"
-          variant="outline-info"
-        >
+        <b-button :to="{ name: 'bandeja' }" variant="outline-info">
           <b-icon icon="arrow-left-short"></b-icon>Atras
         </b-button>
       </div>
@@ -25,76 +13,69 @@
           <b-tab title="Información de Expediente" active>
             <b-card no-body>
               <b-tabs pills card vertical>
-                <b-tab title="Expediente">
-                  <!-- Información expediente -->
+                <b-tab title="Expediente">                  
                   <div class="mb-3">
                     <h4 class="text-info text-center">
                       <i class="fa fa-folder-open" aria-hidden="true"></i> Expediente
                     </h4>
                   </div>
-                  <b-card v-if="expediente != null">
-                    <form>
-                      <div class="form-row">
-                        <div class="form-group col-md-3">
-                          <label class="text-info">Código</label>
-                          <label class="lbl-data" v-text="expediente.codigo"></label>
-                        </div>
-                        <div class="form-group col-md-9">
-                          <label class="text-info">Título Proyecto</label>
-                          <label class="lbl-data" v-text="expediente.titulo"></label>
-                        </div>
+                  <b-card>                    
+                    <div class="form-row">
+                      <div class="form-group col-md-3">
+                        <label class="text-info">Código</label>
+                        <label class="lbl-data" v-text="expediente.codigo"></label>
                       </div>
-                      <div class="form-row">
-                        <div class="form-group col-md-6">
-                          <label class="text-info">Programa de estudios</label>
-                          <label class="lbl-data" v-text="expediente.escuela"></label>
-                        </div>
-                        <div class="form-group col-md-6">
-                          <label class="text-info">Fecha de inicio de trámite</label>
-                          <label class="lbl-data" v-text="expediente.fing"></label>
-                        </div>
+                      <div class="form-group col-md-9">
+                        <label class="text-info">Título Proyecto</label>
+                        <label class="lbl-data" v-text="expediente.titulo"></label>
                       </div>
-                    </form>
+                    </div>
+                    <div class="form-row">
+                      <div class="form-group col-md-6">
+                        <label class="text-info">Programa de estudios</label>
+                        <label class="lbl-data" v-text="expediente.escuela"></label>
+                      </div>
+                      <div class="form-group col-md-6">
+                        <label class="text-info">Fecha de inicio de trámite</label>
+                        <label class="lbl-data" v-text="expediente.fing"></label>
+                      </div>
+                    </div>                    
                   </b-card>
                 </b-tab>
-                <b-tab title="Graduando">
-                  <!-- Información graduando -->
+                <b-tab title="Graduando">                  
                   <div class="mb-3">
                     <h4 class="text-info text-center">
                       <i class="fa fa-user" aria-hidden="true"></i> Graduando
                     </h4>
                   </div>
-                  <b-card v-if="graduando != null">
-                    <form>
-                      <div class="form-row">
-                        <div class="form-group col-md-3">
-                          <label class="text-info">CUI</label>
-                          <label class="lbl-data" v-text="graduando.cui"></label>
-                        </div>
-                        <div class="form-group col-md-9">
-                          <label class="text-info">Apellidos y Nombres</label>
-                          <label class="lbl-data" v-text="graduando.apell_nombres"></label>
-                        </div>
+                  <b-card>                    
+                    <div class="form-row">
+                      <div class="form-group col-md-3">
+                        <label class="text-info">CUI</label>
+                        <label class="lbl-data" v-text="graduando.cui"></label>
                       </div>
-                      <div class="form-row">
-                        <div class="form-group col-md-3">
-                          <label class="text-info">E-mail</label>
-                          <label class="lbl-data" v-text="graduando.email"></label>
-                        </div>
-                        <div class="form-group col-md-3">
-                          <label class="text-info">Teléfono</label>
-                          <label class="lbl-data" v-text="graduando.telefono_movil"></label>
-                        </div>
-                        <div class="form-group col-md-6">
-                          <label class="text-info">Dirección</label>
-                          <label class="lbl-data" v-text="graduando.direccion"></label>
-                        </div>
+                      <div class="form-group col-md-9">
+                        <label class="text-info">Apellidos y Nombres</label>
+                        <label class="lbl-data" v-text="graduando.apell_nombres"></label>
                       </div>
-                    </form>
+                    </div>
+                    <div class="form-row">
+                      <div class="form-group col-md-3">
+                        <label class="text-info">E-mail</label>
+                        <label class="lbl-data" v-text="graduando.email"></label>
+                      </div>
+                      <div class="form-group col-md-3">
+                        <label class="text-info">Teléfono</label>
+                        <label class="lbl-data" v-text="graduando.telefono_movil"></label>
+                      </div>
+                      <div class="form-group col-md-6">
+                        <label class="text-info">Dirección</label>
+                        <label class="lbl-data" v-text="graduando.direccion"></label>
+                      </div>
+                    </div>                    
                   </b-card>
                 </b-tab>
-                <b-tab title="Documentos">
-                  <!-- Información todos archivos -->
+                <b-tab title="Documentos">                  
                   <div class="mb-3">
                     <h4 class="text-info text-center">
                       <i class="fa fa-files-o" aria-hidden="true"></i> Archivos
@@ -130,11 +111,10 @@
               </b-tabs>
             </b-card>
           </b-tab>
-          <b-tab title="Información de Procedencia" v-if="movimiento != null">
+          <b-tab title="Información de Procedencia">
             <b-card no-body>
               <b-tabs pills card vertical>
-                <b-tab title="Estado de expediente">
-                  <!-- Información procedimiento origen -->
+                <b-tab title="Estado de expediente">                  
                   <div class="mb-3">
                     <h4 class="text-info text-center">Estado de expediente</h4>
                   </div>
@@ -177,8 +157,7 @@
                     </b-col>
                   </b-row>
                 </b-tab>
-                <b-tab title="Archivos adjuntos" v-if="array_archivo_ultimo.length > 0">
-                  <!-- Archivos procedimiento origen -->
+                <b-tab title="Archivos adjuntos" v-if="array_archivo_ultimo.length > 0">                  
                   <div class="mb-4">
                     <h4 class="text-info text-center">
                       <i class="fa fa-files-o" aria-hidden="true"></i> Archivos adjuntos
@@ -224,8 +203,7 @@
               </b-tabs>
             </b-card>
           </b-tab>
-          <b-tab title="Procesamiento de Expediente" v-if="movimiento != null">
-            <!-- Compoenente del procedimiento -->
+          <b-tab title="Procesamiento de Expediente" v-if="movimiento != null">            
             <component
               :is="nombre_componente"
               :grado_modalidad="grado_modalidad"
@@ -292,10 +270,7 @@ import emitir_acta_conformidad_redaccion_trabajo from "@/components/titulo_profe
 export default {
   name: "info-expediente",
   props: {
-    nombre_componente: String,
-    usuario: Object,
-    grado_modalidad: Object,
-    grado_procedimiento: Object,
+    nombre_componente: String,    
     idexpediente: String,
   },
   components: {        
@@ -311,13 +286,16 @@ export default {
     return {
       url: this.$root.API_URL,
       url_show_file: `${this.$root.API_URL}/utils/show_file.php`,
-      expediente: null,
-      graduando: null, // autor del proyecto de graduacion
-      movimiento: null, // ultimo movimiento ingresado al procedimiento y expediente seleccionado
+      usuario: this.$store.getters.getUsuario,
+      grado_modalidad: this.$store.getters.getGradoModalidad,
+      grado_procedimiento: this.$store.getters.getGradoProcedimiento,
+      expediente: {},
+      graduando: {},
+      movimiento: {},
       estados: this.$root.estados,
       color_acciones: this.$root.color_acciones,
-      array_archivo: [], // archivos del expediente
-      array_archivo_ultimo: [], // archivos del expediente del proc origen del ultimo movimiento
+      array_archivo: [],
+      array_archivo_ultimo: [],
       columnas_archivos: [
         { key: "nombre", label: "Nombre", class: "text-left", sortable: true },
         {
@@ -392,6 +370,7 @@ export default {
         .then(response => {
           if (!response.data.error) {
             this.expediente = response.data.expediente;
+            this.$store.dispatch('setExpediente', this.expediente)  
           } else {
             console.log(response.data.message)
           }
