@@ -130,10 +130,7 @@
 <script>
 export default {
   name: "documentos",
-  props: {
-    expediente: Object,
-    idgrado_proc: String,
-    idusuario: String,
+  props: {    
     ruta: Object,
     nombre_asignado: String,
     array_opciones: Array,
@@ -142,6 +139,9 @@ export default {
   data() {
     return {
       url: this.$root.API_URL,
+      usuario: this.$store.getters.getUsuario, 
+      procedimiento: this.$store.getters.getProcedimiento,  
+      expediente: this.$store.getters.getExpediente,
       url_show_file: this.$root.API_URL + "/utils/show_file.php",
       array_documento: [],
       columnas_documento: [
@@ -171,8 +171,8 @@ export default {
     getDocumento() {            
       let formData = new FormData()
       formData.append('idexpediente', this.expediente.id)
-      formData.append('idusuario', this.idusuario)
-      formData.append('idgrado_proc', this.idgrado_proc)      
+      formData.append('idusuario', this.usuario.id)
+      formData.append('idprocedimiento', this.procedimiento.id)      
 
       this.axios
         .post(`${this.url}/Archivo/get`, formData)
@@ -195,8 +195,8 @@ export default {
 
       let formData = new FormData()
       formData.append('idexpediente', this.expediente.id)
-      formData.append('idgrado_proc', this.idgrado_proc)
-      formData.append('idusuario', this.idusuario)
+      formData.append('idprocedimiento', this.procedimiento.id)
+      formData.append('idusuario', this.usuario.id)
       formData.append('idruta', this.ruta.id)
       formData.append('nombre_asignado', documento)
       formData.append('file', this.file)

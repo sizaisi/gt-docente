@@ -4,64 +4,50 @@ require_once 'models/Expediente.php';
 class ExpedienteController {
 	
 	public function getList() {		
-		$idgrado_procedimiento = $_POST['idgrado_procedimiento'];
+		$idprocedimiento = $_POST['idprocedimiento'];
                 $codi_usuario = $_POST['codi_usuario'];
                 $tipo_usuario = $_POST['tipo_usuario'];
                 $tipo_rol = $_POST['tipo_rol'];
-
                 $expediente = new Expediente();
-
-                $result = $expediente->getList($idgrado_procedimiento, $codi_usuario, $tipo_usuario, $tipo_rol);
+                $result = $expediente->getList($idprocedimiento, $codi_usuario, $tipo_usuario, $tipo_rol);
         
                 echo json_encode($result);
 	}
 	
 	public function getListByCodi() {
-		$codi_usuario = $_GET['codi_usuario'];
-  
-                $expediente = new Expediente();
-        
+		$codi_usuario = $_GET['codi_usuario'];  
+                $expediente = new Expediente();        
                 $result = $expediente->getListByCodi($codi_usuario);
         
                 echo json_encode($result); 
 	}
 	
 	public function getMovByIdExp() {
-        $idexpediente = $_GET['idexpediente']; 
-      
-        $expediente = new Expediente();
-      
-        $result = $expediente->getMovByIdExp($idexpediente);
-         
-        echo json_encode($result);
+                $idexpediente = $_GET['idexpediente'];        
+                $expediente = new Expediente();        
+                $result = $expediente->getMovByIdExp($idexpediente);
+                
+                echo json_encode($result);
 	}
 	
-	public function getExpById() {
-        
-                $expediente = new Expediente();
-                //$idexpediente = $_GET['idexpediente'];        
+	public function getExpById() {        
+                $expediente = new Expediente();                
                 $expediente->setId($_POST['idexpediente']);                         
-
                 $result = $expediente->getExpediente();
         
                 echo json_encode($result);  
         }       
 
-        public function getURL() {
-        
-                $expediente = new Expediente();
-                
+        public function getURL() {        
+                $expediente = new Expediente();                
                 $expediente->setId($_POST['idexpediente']);                                                                
-
                 $result = $expediente->getURL();
         
                 echo json_encode($result);  
 	}
         
-        public function updateURL() {
-        
-                $expediente = new Expediente();
-                
+        public function updateURL() {        
+                $expediente = new Expediente();                
                 $expediente->setId($_POST['idexpediente']);                         
                 $expediente->setUrlRepo($_POST['url_repo']);                         
 
@@ -71,14 +57,11 @@ class ExpedienteController {
         }
         
         public function upd_tp_st_acta_dictamen() {
-
-                $expediente = new Expediente();
-                
+                $expediente = new Expediente();                
                 $expediente->setId($_POST['idexpediente']);   
                 $expediente->setFechaSesionJurado($_POST['fecha_sesion_jurado']);                                                                
                 $expediente->setFechaSustentacion($_POST['fecha_sustentacion']);                    
                 $expediente->setHoraSustentacion($_POST['hora_sustentacion']);
-
                 $result = $expediente->upd_tp_st_acta_dictamen();
         
                 echo json_encode($result);

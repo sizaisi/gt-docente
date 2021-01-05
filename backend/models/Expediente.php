@@ -53,7 +53,7 @@ class Expediente {
 		$this->conn = Database::conectar();
 	}
 	
-	public function getList($idgrado_procedimiento, $codi_usuario, $tipo_usuario, $tipo_rol) {
+	public function getList($idprocedimiento, $codi_usuario, $tipo_usuario, $tipo_rol) {
 		$result = array('error' => false);
   
 		if ($tipo_usuario == 'Administrativo') {
@@ -96,7 +96,7 @@ class Expediente {
 							INNER JOIN gt_graduando AS GT_G ON GT_G.id = GT_GE.idgraduando 		
 							INNER JOIN acdiden AS AC_I ON AC_I.cui = GT_G.cui			
 							INNER JOIN actescu AS AC_E ON AC_E.nues = GT_E.nues						
-						WHERE GT_E.idgrado_procedimiento = $idgrado_procedimiento
+						WHERE GT_E.idprocedimiento = $idprocedimiento
 							AND GT_E.id IN (SELECT R.idexpediente
 											FROM gt_recurso AS R
 												INNER JOIN gt_persona AS P ON P.idrecurso = R.id
@@ -116,7 +116,7 @@ class Expediente {
 							INNER JOIN gt_graduando AS GT_G ON GT_G.id = GT_GE.idgraduando 		
 							INNER JOIN acdiden AS AC_I ON AC_I.cui = GT_G.cui			
 							INNER JOIN actescu AS AC_E ON AC_E.nues = GT_E.nues						 
-						WHERE GT_E.idgrado_procedimiento = $idgrado_procedimiento
+						WHERE GT_E.idprocedimiento = $idprocedimiento
 						AND GT_E.id IN (SELECT R.idexpediente
 										FROM gt_recurso AS R
 										INNER JOIN gt_persona AS P ON P.idrecurso = R.id
@@ -292,8 +292,7 @@ class Expediente {
 	public function upd_tp_st_acta_dictamen(){
         $result = array('error' => false);
 
-        $sql = "UPDATE 
-				gt_expediente 
+        $sql = "UPDATE gt_expediente 
 				SET fecha_sesion_jurado = '$this->fecha_sesion_jurado',
 					fecha_sustentacion = '$this->fecha_sustentacion',
 					hora_sustentacion = '$this->hora_sustentacion' 

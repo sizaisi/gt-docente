@@ -13,10 +13,7 @@
             title-item-class="disabledTab"
             :disabled="tabIndex2 < 0"
           >
-            <observaciones
-              :expediente="expediente"
-              :idgrado_proc="grado_procedimiento.id"
-              :idusuario="usuario.id"
+            <observaciones              
               :ruta="ruta"
               ref="observaciones"
             />
@@ -36,11 +33,7 @@
             title-item-class="disabledTab"
             :disabled="tabIndex2 < 1"
           >
-            <movimiento_expediente
-              :grado_modalidad="grado_modalidad"
-              :grado_procedimiento="grado_procedimiento"
-              :usuario="usuario"
-              :expediente="expediente"
+            <movimiento_expediente              
               :movimiento="movimiento"
               :ruta="ruta"
             />
@@ -76,9 +69,7 @@ import movimiento_expediente from '../../recursos/movimiento_expediente.vue';
 
 export default {
   name: 'derivado-rechazar',
-  props: {    
-    expediente: Object,
-    graduando: Object,
+  props: {        
     ruta: Object,
     movimiento: Object,
   },
@@ -88,10 +79,7 @@ export default {
   },
   data() {
     return {
-      url: this.$root.API_URL,
-      usuario: this.$store.getters.getUsuario,
-      grado_modalidad: this.$store.getters.getGradoModalidad,
-      grado_procedimiento: this.$store.getters.getGradoProcedimiento,
+      url: this.$root.API_URL,      
       tabIndex: 0,
       tabIndex2: 0,      
       errors: [],

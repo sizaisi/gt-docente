@@ -6,7 +6,8 @@
                     v-model="tabIndex" 
                     card        
                     active-nav-item-class="font-weight-bold text-uppercase text-danger"   
-                    style="min-height: 250px"                        
+                    style="min-height: 250px"  
+                    lazy                      
                 >   
                     <b-tab title="1. Información de dictamen" title-item-class="disabledTab" :disabled="tabIndex2 < 0">
                         <b-row>
@@ -36,11 +37,9 @@
                             </b-col>
                         </b-row>
                         <info_acta_dictamen 
-                            :expediente="expediente" 
                             :fecha_sesion_jurado="expediente.fecha_sesion_jurado"
                             :fecha_sustentacion="expediente.fecha_sustentacion"
-                            :hora_sustentacion="expediente.hora_sustentacion"
-                            @updateDataFromChild="actualizarInfoDictamen"
+                            :hora_sustentacion="expediente.hora_sustentacion"                           
                         /> 
                         <br>                        
                         <div v-if="errors.length" class="alert alert-danger" role="alert">
@@ -48,9 +47,7 @@
                         </div>                                  
                     </b-tab>  
                     <b-tab title="2. Generar documento" title-item-class="disabledTab" :disabled="tabIndex2 < 1">                        
-                        <generacion_documento                                        
-                            :expediente="expediente"  
-                            :graduando="graduando"                          
+                        <generacion_documento                                                                                     
                             :asesor="asesor"  
                             :jurados="array_jurado_confirmado"                          
                             nombre_archivo_pdf="acta_dictamen.php"
@@ -59,10 +56,7 @@
                         />                      
                     </b-tab>  
                     <b-tab title="3. Añadir documento" title-item-class="disabledTab" :disabled="tabIndex2 < 2">
-                        <documentos               
-                            :expediente="expediente"
-                            :idgrado_proc="grado_procedimiento.id"
-                            :idusuario="usuario.id"                                                                    
+                        <documentos                                                                                                        
                             :ruta="ruta"                                                           
                             ref="documentos"
                             max_docs = "1"
@@ -74,11 +68,7 @@
                     </b-tab>                   
                     <b-tab :title="'4. '+ruta.etiqueta.charAt(0).toUpperCase()+ruta.etiqueta.slice(1)+' expediente'" 
                         title-item-class="disabledTab" :disabled="tabIndex2 < 3">
-                        <movimiento_expediente
-                            :grado_modalidad="grado_modalidad"
-                            :grado_procedimiento="grado_procedimiento"                        
-                            :usuario="usuario"                                                      
-                            :expediente="expediente"
+                        <movimiento_expediente                            
                             :movimiento="movimiento"
                             :ruta="ruta"                                                            
                         />
@@ -107,9 +97,7 @@ import movimiento_expediente from '../../recursos/movimiento_expediente.vue'
 
 export default {
     name: 'derivado-derivar',
-    props: {          
-        idexpediente: String,                 
-        graduando: Object,        
+    props: {                       
         ruta: Object,
         movimiento: Object
     },
@@ -121,13 +109,9 @@ export default {
     },
     data() {
         return {             
-            url: this.$root.API_URL,      
-            usuario: this.$store.getters.getUsuario,
-            grado_modalidad: this.$store.getters.getGradoModalidad,
-            grado_procedimiento: this.$store.getters.getGradoProcedimiento,
+            url: this.$root.API_URL,                  
             tabIndex: 0,         
-            tabIndex2: 0, 
-            expediente: {},           
+            tabIndex2: 0,              
             array_jurado_confirmado : [],            
             asesor : null,  //object    
             modalShow: false,                                     
@@ -137,13 +121,15 @@ export default {
     computed: {
         existeRecursoRutaVecinas() {
             return this.$store.state.rutaVecinaActiva
+        },
+        expediente() {
+            return this.$store.state.expediente
         }
     },
     created() {                          
         this.$store.dispatch("verificarRecursoRutasVecinas", this.ruta.id);                   
         this.getJuradosConfirmados()
-        this.getAsesor()                   
-        this.getExpediente()
+        this.getAsesor()                           
     },       
     methods: {            
         prevTab() {
@@ -198,24 +184,10 @@ export default {
             }      
 
             return false
-        },        
-        getExpediente() {     
-            let formData = new FormData()
-            formData.append('idexpediente', this.idexpediente)
-
-            this.axios
-                .post(`${this.url}/Expediente/getExpById`, formData)
-                .then(response => {
-                    if (!response.data.error) {
-                        this.expediente = response.data.expediente;                        
-                    } else {
-                        console.log(response.data.message)
-                    }
-                });
-        },        
+        },                
         getAsesor() {
             let formData = new FormData()
-            formData.append('idexpediente', this.idexpediente)
+            formData.append('idexpediente', this.expediente.id)
 
             this.axios.post(`${this.url}/Persona/get_asesor_expediente`, formData)
             .then(response => {                
@@ -229,7 +201,7 @@ export default {
         },    
         getJuradosConfirmados() { // para obtener los jurados asignados por el usuario
             let formData = new FormData()
-            formData.append('idexpediente', this.idexpediente)
+            formData.append('idexpediente', this.expediente.id)
 
             this.axios.post(`${this.url}/Persona/jurado_confirmado_expediente`, formData)
             .then(response => {            
@@ -240,10 +212,7 @@ export default {
                     console.log(response.data.message)      
                 }
             })   
-        },           
-        actualizarInfoDictamen() {
-            this.getExpediente()
-        },                                    
+        },                                                 
     },         
 }
 </script>

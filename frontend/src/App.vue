@@ -28,13 +28,13 @@ export default {
     methods: {
       getCodiOper() {       
         this.axios.get(`${this.url}/codi_oper.php`)
-          .then(response => {                  
+          .then(response => {                              
             if (!response.data.error) {
               this.codi_usuario = response.data.codi_oper              
               this.getUsuario()
             }
             else {
-              this.$root.mostrarNotificacion('Advertencia!', 'warning', 4000, 'error', response.data.message, 'bottom-right')
+              this.$root.errorAlert(response.data.message)
             }                  
           })
       },   
@@ -42,8 +42,8 @@ export default {
         let formData = new FormData()
         formData.append('codi_usuario', this.codi_usuario)                              
 
-        this.axios.post(`${this.url}/Usuario/getIdUsuario`, formData)
-        .then(response => {                
+        this.axios.post(`${this.url}/Usuario/getUsuario`, formData)
+        .then(response => {                                    
             if (!response.data.error) {
               let usuario = response.data.usuario        
               this.$store.dispatch('setUsuario', usuario)                           

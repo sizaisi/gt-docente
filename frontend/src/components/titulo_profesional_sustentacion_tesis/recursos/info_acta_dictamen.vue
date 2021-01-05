@@ -42,8 +42,7 @@
 <script>
   export default {
     name: 'info-acta-dictamen',
-    props: {        
-        expediente: Object,
+    props: {             
         fecha_sesion_jurado: String,
         fecha_sustentacion: String,
         hora_sustentacion: String,
@@ -51,6 +50,7 @@
     data() {
       return {
         url: this.$root.API_URL,   
+        expediente: this.$store.getters.getExpediente,
         info_dictamen: {
             fecha_sesion_jurado: '',
             fecha_sustentacion: '',
@@ -80,8 +80,8 @@
                 .then(response => {        
                     //this.$log.debug('registrar info dictamen', response)                                
                     if (!response.data.error) {                                              
-                        this.$root.successAlert(response.data.message)
-                        this.updateDataParent()
+                        this.$root.successAlert(response.data.message)                        
+                        this.getExpediente() //actualizar expediente
                     }
                     else {
                         this.$root.errorAlert(response.data.message)
@@ -91,10 +91,23 @@
                         this.$bvModal.hide('info-dictamen')
                     }) 
             })       
-        },
-        updateDataParent() {
-            this.$emit('updateDataFromChild')
-        }      
+        },        
+        getExpediente() {     
+            let formData = new FormData()
+            formData.append('idexpediente', this.expediente.id)
+
+            this.axios
+                .post(`${this.url}/Expediente/getExpById`, formData)
+                .then(response => {
+                    if (!response.data.error) {
+                        this.expediente = response.data.expediente;   
+                        this.$store.dispatch('setExpediente', this.expediente)                                      
+                    } else {
+                        console.log(response.data.message)
+                    }
+                });
+        },  
+
     }
   }
 </script>

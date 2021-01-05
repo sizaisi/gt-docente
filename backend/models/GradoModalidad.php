@@ -9,16 +9,16 @@ class GradoModalidad
         $this->conn = Database::conectar();
     }   
 
-    public function getGradoModalidades($codi_usuario, $idrol_area)
+    public function getGradoModalidades($codi_usuario, $idrol)
     {
         $result = array('error' => false);
 
-        $sql = "SELECT GM.id, GT.nombre AS nombre_grado_titulo, GMO.nombre AS nombre_modalidad_obtencion
-                FROM gt_grado_modalidad AS GM 
-                INNER JOIN gt_grado_titulo AS GT ON GM.idgrado_titulo = GT.id 
-                INNER JOIN gt_modalidad_obtencion AS GMO ON GM.idmodalidad_obtencion = GMO.id
-                WHERE GM.condicion = 1
-                ORDER BY nombre_grado_titulo ASC, GM.id ASC";
+        $sql = "SELECT GM.id, G.nombre AS grado_titulo, M.nombre AS modalidad, GM.componente
+                FROM gt_grado_modalidades AS GM 
+                INNER JOIN gt_grados AS G ON GM.idgrado = G.id 
+                INNER JOIN gt_modalidades AS M ON GM.idmodalidad = M.id
+                WHERE GM.deleted_at IS NULL
+                ORDER BY grado_titulo ASC, GM.id ASC";
 
         $result_query = mysqli_query($this->conn, $sql);
 
@@ -27,17 +27,17 @@ class GradoModalidad
         while ($row = $result_query->fetch_assoc()) {
 
             $sql2 = "SELECT COUNT(*) AS total_expedientes 
-                        FROM gt_grado_procedimiento AS GP INNER JOIN gt_expediente AS GE
-                        ON GP.id = GE.idgrado_procedimiento
-                        WHERE GP.idrol_area = $idrol_area
+                        FROM gt_procedimientos AS P INNER JOIN gt_expediente AS GE
+                        ON P.id = GE.idprocedimiento
+                        WHERE P.idrol = $idrol
                         AND GE.id IN (SELECT R.idexpediente
                                         FROM gt_recurso R 
                                         INNER JOIN gt_persona P ON P.idrecurso = R.id
                                         INNER JOIN gt_usuario U ON U.id = P.iddocente
-                                        WHERE IF(GP.tipo_rol='asesor', P.tipo='asesor', P.tipo IN ('presidente', 'secretario', 'suplente')) 
+                                        WHERE IF(P.tipo_rol='asesor', P.tipo='asesor', P.tipo IN ('presidente', 'secretario', 'suplente')) 
                                         AND P.estado = 1 
                                         AND U.codi_usuario='$codi_usuario') 
-                        AND GP.idgrado_modalidad = " . $row['id'];
+                        AND P.idgradomodalidad = " . $row['id'];
 
             $result_query2 = mysqli_query($this->conn, $sql2);
 
@@ -46,7 +46,7 @@ class GradoModalidad
             if ($row2['total_expedientes'] > 0) { //obtener solo aquellos items que tengan expedientes en proceso
                 $row['total_expedientes'] = $row2['total_expedientes'];
                 array_push($array_grado_modalidad, $row);
-            }
+            }            
         }
 
         $result['array_grado_modalidad'] = $array_grado_modalidad;

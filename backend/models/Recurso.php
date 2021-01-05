@@ -3,7 +3,7 @@
 class Recurso {
 	protected $id;
 	protected $idexpediente;
-    protected $idgrado_proc;
+    protected $idprocedimiento;
     protected $idusuario;    
     protected $idmovimiento;
     protected $idruta;		
@@ -30,13 +30,13 @@ class Recurso {
 		$this->idexpediente = $idexpediente;
     }	
     
-    function getIdGradoProc() {
-		return $this->idgrado_proc;
+    function getIdProcedimiento() {
+		return $this->idprocedimiento;
 	}
 
-	function setIdGradoProc($idgrado_proc) {
-		$this->idgrado_proc = $idgrado_proc;
-    }	
+	function setIdProcedimiento($idprocedimiento) {
+		$this->idprocedimiento = $idprocedimiento;
+    }		
     
     function getIdUsuario() {
 		return $this->idusuario;
@@ -70,13 +70,13 @@ class Recurso {
 		$sql = "SELECT GT_RE.*
 			    FROM gt_recurso AS GT_RE			    
 			    WHERE GT_RE.idexpediente = $this->idexpediente 
-				AND GT_RE.idgrado_proc = $this->idgrado_proc 
+				AND GT_RE.idprocedimiento = $this->idprocedimiento 
 				AND GT_RE.idusuario = $this->idusuario 
 				AND GT_RE.idruta <> $this->idruta 
 				AND GT_RE.idmovimiento IS NULL 
 				AND GT_RE.idruta IN (SELECT id
-								     FROM gt_ruta AS GT_R 								   
-								     wHERE GT_R.idgradproc_origen = $this->idgrado_proc)";
+								     FROM gt_rutas AS GT_R 								   
+								     wHERE GT_R.idproc_origen = $this->idprocedimiento)";
   
 		$result_query = mysqli_query($this->conn, $sql);
 

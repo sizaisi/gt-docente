@@ -1,162 +1,158 @@
-<template>
-  <div>
-   <div class="container-fluid p-4" style="background-color: #fff;">
-        <h5 class="text-center font-weight-bold text-uppercase text-danger" v-text="grado_procedimiento.proc_nombre + ': Expedientes'"></h5>      
-        <div class="text-center m-3">                           
-            <b-button :to="{ name: 'procedimientos' }" variant="outline-info"> 
-                <b-icon icon="arrow-left-short"></b-icon> Atras
-            </b-button>
-        </div> 
-        <b-card no-body>
-            <b-tabs card active-nav-item-class="font-weight-bold text-uppercase text-danger">
-                <b-tab title="Recibidos" @click="getExpedientes(grado_procedimiento.id, grado_procedimiento.tipo_rol)" active>                
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <b-row>
-                                <b-col md="4" class="my-1">
-                                    <b-form-group label-cols-sm="6" label="Expedientes por página: " class="mb-0">
-                                        <b-form-select v-model="perPage" :options="pageOptions"></b-form-select>
-                                    </b-form-group>
-                                </b-col>
-                                <b-col offset-md="4" md="4" class="my-1">
-                                    <b-form-group label-cols-sm="3" label="Buscar: " class="mb-0">
-                                        <b-input-group>
-                                            <b-form-input v-model="filter" placeholder="Escriba el texto a buscar..."></b-form-input>
-                                            <b-input-group-append>
-                                                <b-button :disabled="!filter" @click="filter = ''">Limpiar</b-button>
-                                            </b-input-group-append>
-                                        </b-input-group>
-                                    </b-form-group>
-                                </b-col>                        
-                            </b-row>      
-                            <b-table
-                                bordered
-                                striped
-                                :items="array_expediente"
-                                :fields="columnas"               
-                                show-empty
-                                empty-text="No hay expedientes recibidos que mostrar."
-                                :current-page="currentPage"
+<template>  
+<div class="container-fluid p-4" style="background-color: #fff;">
+    <h5 class="text-center font-weight-bold text-uppercase text-danger" v-text="procedimiento.nombre + ': Expedientes'"></h5>      
+    <div class="text-center m-3">                           
+        <b-button :to="{ name: 'procedimientos' }" variant="outline-info"> 
+            <b-icon icon="arrow-left-short"></b-icon> Atras
+        </b-button>
+    </div> 
+    <b-card no-body>
+        <b-tabs card active-nav-item-class="font-weight-bold text-uppercase text-danger">
+            <b-tab title="Recibidos" @click="getExpedientes(procedimiento.id, procedimiento.tipo_rol)" active>                
+                <div class="row">
+                    <div class="col-lg-12">
+                        <b-row>
+                            <b-col md="4" class="my-1">
+                                <b-form-group label-cols-sm="6" label="Expedientes por página: " class="mb-0">
+                                    <b-form-select v-model="perPage" :options="pageOptions"></b-form-select>
+                                </b-form-group>
+                            </b-col>
+                            <b-col offset-md="4" md="4" class="my-1">
+                                <b-form-group label-cols-sm="3" label="Buscar: " class="mb-0">
+                                    <b-input-group>
+                                        <b-form-input v-model="filter" placeholder="Escriba el texto a buscar..."></b-form-input>
+                                        <b-input-group-append>
+                                            <b-button :disabled="!filter" @click="filter = ''">Limpiar</b-button>
+                                        </b-input-group-append>
+                                    </b-input-group>
+                                </b-form-group>
+                            </b-col>                        
+                        </b-row>      
+                        <b-table
+                            bordered
+                            striped
+                            :items="array_expediente"
+                            :fields="columnas"               
+                            show-empty
+                            empty-text="No hay expedientes recibidos que mostrar."
+                            :current-page="currentPage"
+                            :per-page="perPage"
+                            :filter="filter"
+                            @filtered="onFiltered" 
+                            empty-filtered-text="No hay expedientes que coincidan con su búsqueda."
+                            :busy="isBusy"                                
+                        >                         
+                            <template v-slot:cell(estado)="data">
+                                <b-badge :variant="color_estados[data.item.estado]">{{data.item.estado}}</b-badge>
+                            </template> 
+                            <template v-slot:cell(acciones)="data">                                 
+                                <b-button variant="success" size="sm" data-toggle="tooltip" data-placement="left" title="Evaluar" 
+                                :to="{ name: grado_modalidad.componente, 
+                                        params: { idexpediente: data.item.id } 
+                                     }"
+                                >
+                                <i class="fa fa-edit"></i> Evaluar
+                                </b-button>                        
+                            </template>
+                            <template v-slot:table-busy>
+                                <div class="text-center text-danger my-2">
+                                    <b-spinner class="align-middle"></b-spinner>
+                                    <strong>Cargando...</strong>
+                                </div>
+                            </template>  
+                        </b-table>   
+                        <b-row>
+                            <b-col offset-md="6" md="6" class="my-1">
+                                <b-pagination
+                                v-model="currentPage"
+                                :total-rows="totalRows"
                                 :per-page="perPage"
-                                :filter="filter"
-                                @filtered="onFiltered" 
-                                empty-filtered-text="No hay expedientes que coincidan con su búsqueda."
-                                :busy="isBusy"                                
-                            >                         
-                                <template v-slot:cell(estado)="data">
-                                    <b-badge :variant="color_estados[data.item.estado]">{{data.item.estado}}</b-badge>
-                                </template> 
-                                <template v-slot:cell(acciones)="data">                                 
-                                    <b-button variant="success" size="sm" data-toggle="tooltip" data-placement="left" title="Evaluar" 
-                                    :to="{ name: 'info-expediente' + grado_modalidad.id, 
-                                            params: {   nombre_componente: grado_procedimiento.url_formulario,                                                         
-                                                        idexpediente: data.item.id,                                                                                                                  
-                                                    } 
-                                        }"
-                                    >
-                                    <i class="fa fa-edit"></i> Evaluar
-                                    </b-button>                        
-                                </template>
-                                <template v-slot:table-busy>
-                                    <div class="text-center text-danger my-2">
-                                        <b-spinner class="align-middle"></b-spinner>
-                                        <strong>Cargando...</strong>
-                                    </div>
-                                </template>  
-                            </b-table>   
-                            <b-row>
-                                <b-col offset-md="6" md="6" class="my-1">
-                                    <b-pagination
-                                    v-model="currentPage"
-                                    :total-rows="totalRows"
-                                    :per-page="perPage"
-                                    class="my-0"
-                                    align="right"
-                                    ></b-pagination>
-                                </b-col>
-                            </b-row> 
-                        </div>
-                    </div>                                       
-                </b-tab>
-                <b-tab title="Enviados" @click="getExpedientesEnviados(grado_procedimiento.id)"> 
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <b-row>
-                                <b-col md="4" class="my-1">
-                                    <b-form-group label-cols-sm="6" label="Expedientes por página: " class="mb-0">
-                                        <b-form-select v-model="perPage" :options="pageOptions"></b-form-select>
-                                    </b-form-group>
-                                </b-col>
-                                <b-col offset-md="4" md="4" class="my-1">
-                                    <b-form-group label-cols-sm="3" label="Buscar: " class="mb-0">
-                                        <b-input-group>
-                                            <b-form-input v-model="filter" placeholder="Escriba el texto a buscar..."></b-form-input>
-                                            <b-input-group-append>
-                                                <b-button :disabled="!filter" @click="filter = ''">Limpiar</b-button>
-                                            </b-input-group-append>
-                                        </b-input-group>
-                                    </b-form-group>
-                                </b-col>                        
-                            </b-row>      
-                            <b-table
-                                bordered
-                                striped
-                                :items="array_exp_enviados"
-                                :fields="columnas_enviados"               
-                                show-empty
-                                empty-text="No hay expedientes enviados que mostrar."
-                                :current-page="currentPage"
+                                class="my-0"
+                                align="right"
+                                ></b-pagination>
+                            </b-col>
+                        </b-row> 
+                    </div>
+                </div>                                       
+            </b-tab>
+            <b-tab title="Enviados" @click="getExpedientesEnviados(procedimiento.id)"> 
+                <div class="row">
+                    <div class="col-lg-12">
+                        <b-row>
+                            <b-col md="4" class="my-1">
+                                <b-form-group label-cols-sm="6" label="Expedientes por página: " class="mb-0">
+                                    <b-form-select v-model="perPage" :options="pageOptions"></b-form-select>
+                                </b-form-group>
+                            </b-col>
+                            <b-col offset-md="4" md="4" class="my-1">
+                                <b-form-group label-cols-sm="3" label="Buscar: " class="mb-0">
+                                    <b-input-group>
+                                        <b-form-input v-model="filter" placeholder="Escriba el texto a buscar..."></b-form-input>
+                                        <b-input-group-append>
+                                            <b-button :disabled="!filter" @click="filter = ''">Limpiar</b-button>
+                                        </b-input-group-append>
+                                    </b-input-group>
+                                </b-form-group>
+                            </b-col>                        
+                        </b-row>      
+                        <b-table
+                            bordered
+                            striped
+                            :items="array_exp_enviados"
+                            :fields="columnas_enviados"               
+                            show-empty
+                            empty-text="No hay expedientes enviados que mostrar."
+                            :current-page="currentPage"
+                            :per-page="perPage"
+                            :filter="filter"
+                            @filtered="onFiltered" 
+                            empty-filtered-text="No hay expedientes que coincidan con su búsqueda."
+                            :busy="isBusy"
+                        >                         
+                            <template v-slot:cell(estado)="data">
+                                <b-badge :variant="color_estados[data.item.estado]">{{data.item.estado}}</b-badge>
+                            </template> 
+                            <template v-slot:cell(acciones)="data">                                 
+                                <b-button variant="warning" size="sm" title="Deshacer" 
+                                    @click="deshacer(data.item.id, data.item.idexpediente, data.item.idproc_origen, data.item.fecha_ant, data.item.etiqueta)">
+                                    <i class="fa fa-edit"></i> Deshacer
+                                </b-button>                        
+                            </template>    
+                            <template v-slot:table-busy>
+                                <div class="text-center text-danger my-2">
+                                    <b-spinner class="align-middle"></b-spinner>
+                                    <strong>Cargando...</strong>
+                                </div>
+                            </template>
+                        </b-table>   
+                        <b-row>
+                            <b-col offset-md="6" md="6" class="my-1">
+                                <b-pagination
+                                v-model="currentPage"
+                                :total-rows="totalRows"
                                 :per-page="perPage"
-                                :filter="filter"
-                                @filtered="onFiltered" 
-                                empty-filtered-text="No hay expedientes que coincidan con su búsqueda."
-                                :busy="isBusy"
-                            >                         
-                                <template v-slot:cell(estado)="data">
-                                    <b-badge :variant="color_estados[data.item.estado]">{{data.item.estado}}</b-badge>
-                                </template> 
-                                <template v-slot:cell(acciones)="data">                                 
-                                    <b-button variant="warning" size="sm" title="Deshacer" 
-                                        @click="deshacer(data.item.id, data.item.idexpediente, data.item.idgradproc_origen, data.item.fecha_ant, data.item.etiqueta)">
-                                        <i class="fa fa-edit"></i> Deshacer
-                                    </b-button>                        
-                                </template>    
-                                <template v-slot:table-busy>
-                                    <div class="text-center text-danger my-2">
-                                        <b-spinner class="align-middle"></b-spinner>
-                                        <strong>Cargando...</strong>
-                                    </div>
-                                </template>
-                            </b-table>   
-                            <b-row>
-                                <b-col offset-md="6" md="6" class="my-1">
-                                    <b-pagination
-                                    v-model="currentPage"
-                                    :total-rows="totalRows"
-                                    :per-page="perPage"
-                                    class="my-0"
-                                    align="right"
-                                    ></b-pagination>
-                                </b-col>
-                            </b-row> 
-                        </div>
-                    </div>                 
-                </b-tab>
-            </b-tabs>                                        
-        </b-card>
-   </div>  
-</div>   
+                                class="my-0"
+                                align="right"
+                                ></b-pagination>
+                            </b-col>
+                        </b-row> 
+                    </div>
+                </div>                 
+            </b-tab>
+        </b-tabs>                                        
+    </b-card>
+</div>
 </template>
 
 <script>
 export default {
-  name: 'menu-procedimientos',       
+  name: 'bandeja',       
   data() {
     return {                               
         url: this.$root.API_URL,
         usuario: this.$store.getters.getUsuario,
         grado_modalidad: this.$store.getters.getGradoModalidad,
-        grado_procedimiento: this.$store.getters.getGradoProcedimiento,
+        procedimiento: this.$store.getters.getProcedimiento,
         color_estados : this.$root.color_estados,
         estados : this.$root.estados,                                
         array_expediente : [],  
@@ -186,22 +182,20 @@ export default {
     }
   },  
   created() {         
-    if (this.grado_procedimiento != null) { //si se ha establecido id grado modalidad      
-      this.getExpedientes(this.grado_procedimiento.id, this.grado_procedimiento.tipo_rol)    
+    if (this.procedimiento != null) {
+      this.getExpedientes(this.procedimiento.id, this.procedimiento.tipo_rol)    
     }
     else {
       this.$router.push({ name: 'home' }); 
     }      
   },
   methods: {            
-    getExpedientes(idgrado_procedimiento, tipo_rol) {   
+    getExpedientes(idprocedimiento, tipo_rol) {   
         let formData = new FormData()
-
-        formData.append('idgrado_procedimiento', idgrado_procedimiento)
+        formData.append('idprocedimiento', idprocedimiento)
         formData.append('codi_usuario', this.usuario.codi_usuario)  
         formData.append('tipo_usuario', this.usuario.tipo)  
-        formData.append('tipo_rol', tipo_rol)  
-        
+        formData.append('tipo_rol', tipo_rol)          
         this.toggleBusy()
 
         this.axios.post(`${this.url}/Expediente/getList`, formData)
@@ -216,12 +210,10 @@ export default {
             this.toggleBusy()
         })            
     },
-    getExpedientesEnviados(idgrado_procedimiento) {     
+    getExpedientesEnviados(idprocedimiento) {     
         let formData = new FormData()
-
         formData.append('idusuario', this.usuario.id)
-        formData.append('idgradproc_origen', idgrado_procedimiento)          
-       
+        formData.append('idproc_origen', idprocedimiento)                 
         this.toggleBusy()
 
         this.axios.post(`${this.url}/Movimiento/expedientes_enviados`, formData)
@@ -236,7 +228,7 @@ export default {
             this.toggleBusy()
         })
     },    
-    deshacer(idmovimiento, idexpediente, idgradproc_origen, fecha_ant, etiqueta) { // movimiento para derivar el expediente al siguiente procedimiento
+    deshacer(idmovimiento, idexpediente, idproc_origen, fecha_ant, etiqueta) { // movimiento para derivar el expediente al siguiente procedimiento
         this.$bvModal.msgBoxConfirm(
             '¿Seguro que quiere deshacer el movimiento realizado sobre este expediente?', {
             title: 'Deshacer Movimiento',                    
@@ -247,10 +239,9 @@ export default {
         }).then(value => {
             if (value) {
                 let formData = new FormData()
-
                 formData.append('id', idmovimiento)
                 formData.append('idexpediente', idexpediente)    
-                formData.append('idgradproc_origen', idgradproc_origen)    
+                formData.append('idproc_origen', idproc_origen)    
                 formData.append('fecha_ant', fecha_ant) //fecha de recepcion del expediente en movimiento anterior   
                 formData.append('estado_expediente_ant', this.estados[etiqueta])                           
                 
@@ -258,7 +249,7 @@ export default {
                 .then(response => {                                                                             
                     if (!response.data.error) {
                         this.$root.successAlert(response.data.message)
-                        this.getExpedientesEnviados(idgradproc_origen)
+                        this.getExpedientesEnviados(idproc_origen)
                     }
                     else {                           
                         this.$root.errorAlert(response.data.message)

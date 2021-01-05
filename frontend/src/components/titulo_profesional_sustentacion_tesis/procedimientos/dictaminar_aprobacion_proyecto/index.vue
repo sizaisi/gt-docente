@@ -22,32 +22,17 @@
     </div>   
 
     <template v-if="(estados[movimiento.etiqueta] == 'aprobado' || estados[movimiento.etiqueta] == 'enviado') && (ruta_seleccionada != null)">                 
-      <aprobado_enviado_aprobar
-        :grado_modalidad="grado_modalidad"
-        :grado_procedimiento="grado_procedimiento"        
-        :usuario="usuario"             
-        :expediente="expediente"
-        :graduando="graduando"
+      <aprobado_enviado_aprobar        
         :ruta="ruta_seleccionada"
         :movimiento="movimiento"
         v-if="ruta_seleccionada.etiqueta == 'aprobar'"                         
       />              
-      <aprobado_enviado_denegar
-        :grado_modalidad="grado_modalidad"
-        :grado_procedimiento="grado_procedimiento"
-        :usuario="usuario"               
-        :expediente="expediente"
-        :graduando="graduando"
+      <aprobado_enviado_denegar        
         :ruta="ruta_seleccionada"
         :movimiento="movimiento"
         v-if="ruta_seleccionada.etiqueta == 'denegar'"                  
       />       
-      <aprobado_enviado_rechazar
-        :grado_modalidad="grado_modalidad"
-        :grado_procedimiento="grado_procedimiento"
-        :usuario="usuario"                
-        :expediente="expediente"
-        :graduando="graduando"
+      <aprobado_enviado_rechazar        
         :ruta="ruta_seleccionada"
         :movimiento="movimiento"
         v-if="ruta_seleccionada.etiqueta == 'rechazar'"                  
@@ -61,12 +46,9 @@ import aprobado_enviado_aprobar from './aprobado_enviado_aprobar.vue'
 import aprobado_enviado_denegar from './aprobado_enviado_denegar.vue'
 import aprobado_enviado_rechazar from './aprobado_enviado_rechazar.vue'
 
-
 export default {  
   name: 'index',  
-  props: {      
-    expediente: Object,
-    graduando: Object,
+  props: {          
     movimiento: Object,
   },
   components: {    
@@ -76,10 +58,7 @@ export default {
   },
   data() {
     return {             
-      url: this.$root.API_URL,   
-      usuario: this.$store.getters.getUsuario,
-      grado_modalidad: this.$store.getters.getGradoModalidad,
-      grado_procedimiento: this.$store.getters.getGradoProcedimiento,                    
+      url: this.$root.API_URL,         
       ruta_seleccionada: null,      
       estados : this.$root.estados,  
     }
