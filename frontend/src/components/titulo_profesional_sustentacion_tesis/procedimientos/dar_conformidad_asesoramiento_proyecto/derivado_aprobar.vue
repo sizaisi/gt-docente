@@ -37,13 +37,8 @@
               </ul>
             </div>
           </b-tab>
-          <b-tab
-            :title="
-              '3. ' +
-                ruta.etiqueta.charAt(0).toUpperCase() +
-                ruta.etiqueta.slice(1) +
-                ' expediente'
-            "
+          <b-tab 
+            :title=" '3. ' + ruta.etiqueta.charAt(0).toUpperCase() + ruta.etiqueta.slice(1) + ' expediente'"
             title-item-class="disabledTab"
             :disabled="tabIndex2 < 2"
           >
@@ -56,12 +51,8 @@
       </b-card>
       <div class="text-center">
         <b-button-group class="mt-3">
-          <b-button class="mr-1" @click="prevTab" :disabled="tabIndex == 0"
-            >Anterior</b-button
-          >
-          <b-button @click="nextTab" :disabled="tabIndex == 2"
-            >Siguiente</b-button
-          >
+          <b-button class="mr-1" @click="prevTab" :disabled="tabIndex == 0">Anterior</b-button>
+          <b-button @click="nextTab" :disabled="tabIndex == 2">Siguiente</b-button>
         </b-button-group>
       </div>
     </template>
@@ -99,7 +90,7 @@ export default {
       expediente: this.$store.getters.getExpediente,
       tabIndex: 0,
       tabIndex2: 0,      
-      asesor: null, //object
+      asesor: null,
       errors: [],
     };
   },
@@ -139,30 +130,28 @@ export default {
     },
     validarTab1() {
       if (this.$refs.documentos.cantidadDocumentos() == 0) {        
-        this.errors.push(
-          'Debe registrar documentos para el expediente seleccionado.'
-        );
+        this.errors.push('Debe registrar documentos para el expediente seleccionado.')
       }
 
       if (!this.errors.length) {
-        return true;
+        return true
       }
 
-      return false;
+      return false
     },    
     getAsesor() {
-      let formData = new FormData();
-      formData.append('idexpediente', this.expediente.id);
+      let formData = new FormData()
+      formData.append('idexpediente', this.expediente.id)
 
       this.axios
         .post(`${this.url}/Persona/get_asesor_expediente`, formData)
         .then((response) => {
           if (!response.data.error) {
-            this.asesor = response.data.asesor;
+            this.asesor = response.data.asesor
           } else {
-            console.log(response.data.message);
+            console.log(response.data.message)
           }
-        });
+        })
     },
   },
 };

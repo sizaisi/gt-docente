@@ -24,12 +24,7 @@
             </div>
           </b-tab>
           <b-tab
-            :title="
-              '2. ' +
-                ruta.etiqueta.charAt(0).toUpperCase() +
-                ruta.etiqueta.slice(1) +
-                ' expediente'
-            "
+            :title=" '2. ' + ruta.etiqueta.charAt(0).toUpperCase() + ruta.etiqueta.slice(1) + ' expediente'"
             title-item-class="disabledTab"
             :disabled="tabIndex2 < 1"
           >
@@ -42,12 +37,8 @@
       </b-card>
       <div class="text-center">
         <b-button-group class="mt-3">
-          <b-button class="mr-1" @click="prevTab" :disabled="tabIndex == 0"
-            >Anterior</b-button
-          >
-          <b-button @click="nextTab" :disabled="tabIndex == 1"
-            >Siguiente</b-button
-          >
+          <b-button class="mr-1" @click="prevTab" :disabled="tabIndex == 0">Anterior</b-button>
+          <b-button @click="nextTab" :disabled="tabIndex == 1">Siguiente</b-button>
         </b-button-group>
       </div>
     </template>
@@ -87,7 +78,7 @@ export default {
   },
   computed: {
       existeRecursoRutaVecinas() {
-          return this.$store.state.rutaVecinaActiva
+        return this.$store.state.rutaVecinaActiva
       }
   },
   created() {                          
@@ -116,9 +107,7 @@ export default {
     },
     validarTab1() {
       if (this.$refs.observaciones.cantidadObservaciones() == 0) {        
-        this.errors.push(
-          'Debe registrar observaciones para el expediente seleccionado.'
-        );
+        this.errors.push('Debe registrar observaciones para el expediente seleccionado.')
       }
 
       if (!this.errors.length) {

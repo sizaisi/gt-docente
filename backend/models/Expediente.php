@@ -53,82 +53,50 @@ class Expediente {
 		$this->conn = Database::conectar();
 	}
 	
-	public function getList($idprocedimiento, $codi_usuario, $tipo_usuario, $tipo_rol) {
-		$result = array('error' => false);
-  
-		if ($tipo_usuario == 'Administrativo') {
-			/*$sql = "SELECT GT_E.id, GT_E.codigo, GT_E.fecha AS fecha_recepcion, GT_E.estado, 
-						   GROUP_CONCAT(REPLACE(AC_I.apn,'/',' ') SEPARATOR ' / ') AS graduando,
-						   AC_E.nesc AS escuela
-					FROM gt_expediente AS GT_E
-						INNER JOIN gt_graduando_expediente AS GT_GE ON GT_GE.idexpediente = GT_E.id 
-						INNER JOIN gt_graduando AS GT_G ON GT_G.id = GT_GE.idgraduando 											
-						INNER JOIN actescu AS AC_E ON AC_E.nues = GT_E.nues						
-						INNER JOIN SIAC_OPER_DEPE AC_OP ON AC_OP.codi_depe = AC_E.nues
-						INNER JOIN (SELECT AC_I.cui, AC_I.apn, AC_ID.nues, FROM acdiden AS AC_I INNER JOIN acdidal AS AC_ID ON AC_ID.cui = AC_I.cui WHERE AC_ID.cond = 'E')
-						 AS AC_I ON AC_I.cui = GT_G.cui
-					WHERE GT_E.idgrado_procedimiento = $idgrado_procedimiento					
-						AND AC_OP.codi_oper = '$codi_usuario'						
-					GROUP BY GT_GE.idexpediente 
-					ORDER BY GT_E.id ASC";*/
+	public function getList($idprocedimiento, $codi_usuario, $tipo_rol) {
+		$result = array('error' => false);  
+			
+		if ($tipo_rol == 'asesor') {
 			$sql = "SELECT GT_E.id, GT_E.codigo, GT_E.fecha AS fecha_recepcion, GT_E.estado, 
 							GROUP_CONCAT(REPLACE(AC_I.apn,'/',' ') SEPARATOR ' / ') AS graduando,
 							AC_E.nesc AS escuela
 					FROM gt_expediente AS GT_E
 						INNER JOIN gt_graduando_expediente AS GT_GE ON GT_GE.idexpediente = GT_E.id 
-						INNER JOIN gt_graduando AS GT_G ON GT_G.id = GT_GE.idgraduando 																	
-						INNER JOIN acdiden AS AC_I ON AC_I.cui = GT_G.cui	
-						INNER JOIN actescu AS AC_E ON AC_E.nues = GT_E.nues							
-						INNER JOIN SIAC_OPER_DEPE AC_OP ON AC_OP.codi_depe = AC_E.nues						
-					WHERE GT_E.idgrado_procedimiento = $idgrado_procedimiento					
-						AND AC_OP.codi_oper = '$codi_usuario'						
-					GROUP BY GT_GE.idexpediente 
-					ORDER BY GT_E.id ASC";
-		}
-		else if ($tipo_usuario == 'Docente') {			
-
-			if ($tipo_rol == 'asesor') {
-				$sql = "SELECT GT_E.id, GT_E.codigo, GT_E.fecha AS fecha_recepcion, GT_E.estado, 
-							   GROUP_CONCAT(REPLACE(AC_I.apn,'/',' ') SEPARATOR ' / ') AS graduando,
-							   AC_E.nesc AS escuela
-						FROM gt_expediente AS GT_E
-							INNER JOIN gt_graduando_expediente AS GT_GE ON GT_GE.idexpediente = GT_E.id 
-							INNER JOIN gt_graduando AS GT_G ON GT_G.id = GT_GE.idgraduando 		
-							INNER JOIN acdiden AS AC_I ON AC_I.cui = GT_G.cui			
-							INNER JOIN actescu AS AC_E ON AC_E.nues = GT_E.nues						
-						WHERE GT_E.idprocedimiento = $idprocedimiento
-							AND GT_E.id IN (SELECT R.idexpediente
-											FROM gt_recurso AS R
-												INNER JOIN gt_persona AS P ON P.idrecurso = R.id
-												INNER JOIN gt_usuario AS U ON U.id = P.iddocente
-											WHERE P.tipo = 'asesor'
-												AND P.estado = 1  
-												AND U.codi_usuario='$codi_usuario')
-						GROUP BY GT_GE.idexpediente
-						ORDER BY GT_E.id ASC";
-			}
-			else if ($tipo_rol == 'jurado') {
-				$sql = "SELECT GT_E.id, GT_E.codigo, GT_E.fecha AS fecha_recepcion, GT_E.estado, 
-							   GROUP_CONCAT(REPLACE(AC_I.apn,'/',' ') SEPARATOR ' / ') AS graduando,
-							   AC_E.nesc AS escuela
-						FROM gt_expediente AS GT_E
-							INNER JOIN gt_graduando_expediente AS GT_GE ON GT_GE.idexpediente = GT_E.id 
-							INNER JOIN gt_graduando AS GT_G ON GT_G.id = GT_GE.idgraduando 		
-							INNER JOIN acdiden AS AC_I ON AC_I.cui = GT_G.cui			
-							INNER JOIN actescu AS AC_E ON AC_E.nues = GT_E.nues						 
-						WHERE GT_E.idprocedimiento = $idprocedimiento
+						INNER JOIN gt_graduando AS GT_G ON GT_G.id = GT_GE.idgraduando 		
+						INNER JOIN acdiden AS AC_I ON AC_I.cui = GT_G.cui			
+						INNER JOIN actescu AS AC_E ON AC_E.nues = GT_E.nues						
+					WHERE GT_E.idprocedimiento = $idprocedimiento
 						AND GT_E.id IN (SELECT R.idexpediente
 										FROM gt_recurso AS R
-										INNER JOIN gt_persona AS P ON P.idrecurso = R.id
-										INNER JOIN gt_usuario AS U	ON U.id = P.iddocente									
-										WHERE P.tipo IN ('presidente', 'secretario', 'suplente') 
-										AND P.estado = 1 
-										AND U.codi_usuario='$codi_usuario')
-						GROUP BY GT_GE.idexpediente
-						ORDER BY GT_E.id ASC";
-			}			
+											INNER JOIN gt_persona AS P ON P.idrecurso = R.id
+											INNER JOIN gt_usuario AS U ON U.id = P.iddocente
+										WHERE P.tipo = 'asesor'
+											AND P.estado = 1  
+											AND U.codi_usuario='$codi_usuario')
+					GROUP BY GT_GE.idexpediente
+					ORDER BY GT_E.id ASC";
 		}
-
+		else if ($tipo_rol == 'jurado') {
+			$sql = "SELECT GT_E.id, GT_E.codigo, GT_E.fecha AS fecha_recepcion, GT_E.estado, 
+							GROUP_CONCAT(REPLACE(AC_I.apn,'/',' ') SEPARATOR ' / ') AS graduando,
+							AC_E.nesc AS escuela
+					FROM gt_expediente AS GT_E
+						INNER JOIN gt_graduando_expediente AS GT_GE ON GT_GE.idexpediente = GT_E.id 
+						INNER JOIN gt_graduando AS GT_G ON GT_G.id = GT_GE.idgraduando 		
+						INNER JOIN acdiden AS AC_I ON AC_I.cui = GT_G.cui			
+						INNER JOIN actescu AS AC_E ON AC_E.nues = GT_E.nues						 
+					WHERE GT_E.idprocedimiento = $idprocedimiento
+					AND GT_E.id IN (SELECT R.idexpediente
+									FROM gt_recurso AS R
+									INNER JOIN gt_persona AS P ON P.idrecurso = R.id
+									INNER JOIN gt_usuario AS U	ON U.id = P.iddocente									
+									WHERE P.tipo IN ('presidente', 'secretario', 'suplente') 
+									AND P.estado = 1 
+									AND U.codi_usuario='$codi_usuario')
+					GROUP BY GT_GE.idexpediente
+					ORDER BY GT_E.id ASC";
+		}		
+		
 		$result_query = mysqli_query($this->conn, $sql);
   
 		$array_expediente = array();
@@ -156,22 +124,19 @@ class Expediente {
   
 		$array_expediente = array();
   
-		  while ($row = $result_query->fetch_assoc()) {            
-  
-			  $sql2 = "SELECT REPLACE(acdiden.apn,'/',' ') AS apell_nombres FROM acdiden 
+		  while ($row = $result_query->fetch_assoc()) {           
+  			  $sql2 = "SELECT REPLACE(acdiden.apn,'/',' ') AS apell_nombres FROM acdiden 
 					   INNER JOIN gt_graduando ON gt_graduando.cui = acdiden.cui
 					   INNER JOIN gt_usuario ON gt_usuario.codi_usuario = gt_graduando.cui
 					   INNER JOIN gt_usuario_expediente ON gt_usuario_expediente.idusuario = gt_usuario.id
 					   INNER JOIN gt_expediente ON gt_expediente.id = gt_usuario_expediente.idexpediente
-					   WHERE gt_expediente.id = ".$row['id'];
-						  //Buscar si esta bien el row
+					   WHERE gt_expediente.id = ".$row['id'];						  
 			  $result_query2 = mysqli_query($this->conn, $sql2);
   
 			  $row2 = $result_query2->fetch_assoc();
   
-			 $row['apell_nombres'] = $row2['apell_nombres'];       
-  
-					 //$row['apell_nombres'] = $sql2;
+			 $row['apell_nombres'] = $row2['apell_nombres'];         
+					 
 			  array_push($array_expediente, $row);
 						  
 		  }

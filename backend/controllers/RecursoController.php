@@ -5,7 +5,7 @@ class RecursoController {
     
     public function verify() 
     {
-	    	$recurso = new Recurso();        
+	    $recurso = new Recurso();        
         $recurso->setIdExpediente($_POST['idexpediente']);
         $recurso->setIdProcedimiento($_POST['idprocedimiento']);
         $recurso->setIdUsuario($_POST['idusuario']);

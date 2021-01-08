@@ -53,13 +53,11 @@ export default {
             let formData = new FormData()
 
             formData.append('idgrado_modalidad', this.grado_modalidad.id)
-            formData.append('idrol', usuario.idrol)
-            formData.append('idusuario', usuario.id)
-            formData.append('codi_usuario', usuario.codi_usuario)
-            formData.append('tipo_usuario', usuario.tipo)              
+            formData.append('idrol', usuario.idrol)            
+            formData.append('codi_usuario', usuario.codi_usuario)                     
 
             this.axios.post(`${this.url}/Procedimiento/getProcedimientos`, formData)
-            .then(response => {            
+            .then(response => {                            
                 if (!response.data.error) {
                     this.array_procedimiento = response.data.array_procedimiento
                 }

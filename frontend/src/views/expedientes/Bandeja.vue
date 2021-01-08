@@ -193,8 +193,7 @@ export default {
     getExpedientes(idprocedimiento, tipo_rol) {   
         let formData = new FormData()
         formData.append('idprocedimiento', idprocedimiento)
-        formData.append('codi_usuario', this.usuario.codi_usuario)  
-        formData.append('tipo_usuario', this.usuario.tipo)  
+        formData.append('codi_usuario', this.usuario.codi_usuario)          
         formData.append('tipo_rol', tipo_rol)          
         this.toggleBusy()
 

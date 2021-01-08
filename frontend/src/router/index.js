@@ -22,16 +22,10 @@ const routes = [
     path: '/expedientes/bandeja',
     name: 'bandeja',
     component: require("./../views/expedientes/Bandeja.vue").default,       
-  },
-  /*{
-    path: '/expedientes/Bachiller-Automatico',
-    name: 'Bachiller-Automatico',
-    component: require("./../views/expedientes/Bachiller-Automatico.vue").default, 
-    props: true
-  },*/
+  },  
   {
-    path: '/expedientes/TituloProfesional-SustentancionTesis',
-    name: 'TituloProfesional-SustentancionTesis',
+    path: '/expedientes/TituloProfesional-SustentacionTesis',
+    name: 'TituloProfesional-SustentacionTesis',
     component: require("./../views/expedientes/TituloProfesional-SustentacionTesis.vue").default, 
     props: true
   },
