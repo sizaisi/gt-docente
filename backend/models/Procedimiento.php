@@ -2,7 +2,7 @@
 
 class Procedimiento {
 	private $id;
-	private $idgrado_modalidad;
+	private $idtramite;
     private $idprocedimiento;
     private $idrol;
     private $tipo_rol; 
@@ -24,12 +24,12 @@ class Procedimiento {
 		$this->id = $id;
 	}
 
-	function getIdGradoModalidad() {
-		return $this->idgrado_modalidad;
+	function getIdTramite() {
+		return $this->idtramite;
 	}
 
-	function setIdGradoModalidad($idgrado_modalidad) {
-		$this->idgrado_modalidad = $idgrado_modalidad;
+	function setIdTramite($idtramite) {
+		$this->idtramite = $idtramite;
 	}	
 
 	function getIdProcedimiento() {
@@ -87,7 +87,7 @@ class Procedimiento {
                 GT_P.nombre, GT_P.descripcion
                 FROM gt_procedimientos AS GT_P                        
                 INNER JOIN gt_expediente AS GT_E ON GT_E.idprocedimiento = GT_P.id                    
-                WHERE GT_P.deleted_at IS NULL AND GT_P.idgradomodalidad = $this->idgrado_modalidad 
+                WHERE GT_P.deleted_at IS NULL AND GT_P.idtramite = $this->idtramite
                 AND GT_P.idrol =  $this->idrol
                 AND GT_E.id IN (SELECT R.idexpediente
                                 FROM gt_recurso AS R
@@ -108,29 +108,6 @@ class Procedimiento {
         }
 
         $result['array_procedimiento'] = $array_procedimiento;        
-
-        return $result;
-    }
-
-    public function getListByIdGradoModalidad() { //obtener todos los grado procedimientos por idgradomodalidad
-
-        $result = array('error' => false);        
-        
-        $sql = "SELECT gt_gp.id AS idgradoproc, gt_p.nombre AS proc_nombre
-                FROM gt_grado_procedimiento AS gt_gp
-                INNER JOIN gt_procedimiento AS gt_p ON gt_gp.idprocedimiento = gt_p.id
-                WHERE gt_gp.condicion = 1 AND gt_gp.idgrado_modalidad = $this->idgrado_modalidad
-                ORDER BY gt_p.nombre ASC";
-
-        $result_query = mysqli_query($this->conn, $sql);
-
-        $array_grado_procedimiento = array();
-
-        while ($row = $result_query->fetch_assoc()) {
-            array_push($array_grado_procedimiento, $row);
-        }
-
-        $result['array_grado_procedimiento'] = $array_grado_procedimiento;
 
         return $result;
     }    

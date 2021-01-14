@@ -7,7 +7,7 @@ class ProcedimientoController {
 	{		
 		$procedimiento = new Procedimiento();     
 		
-		$procedimiento->setIdGradoModalidad($_POST['idgrado_modalidad']);
+		$procedimiento->setIdTramite($_POST['idtramite']);
 		$procedimiento->setIdRol($_POST['idrol']);		
 		$codi_usuario = $_POST['codi_usuario'];
 		

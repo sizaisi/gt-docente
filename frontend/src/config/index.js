@@ -1,10 +1,10 @@
 const config = { 
 
   /***** SISDOCE *****/
-  //API_URL: '//190.119.145.150:8022/sisacad/sisdoce/graduacion/gt-docente/backend',
+  API_URL: '//190.119.145.150:8022/sisacad/sisdoce/graduacion/gt-docente/backend',
 
   /***** LOCAL *****/
-  API_URL: '//localhost/gt-docente/backend',
+  //API_URL: '//localhost/gt-docente/backend',
 
   //para asignacion de colores a los movimientos o rutas de salida de los procedimientos
   color_acciones: {
