@@ -35,7 +35,7 @@
 import movimiento_expediente from '../../recursos/movimiento_expediente.vue'
 
 export default {
-    name: 'derivado-aceptar',
+    name: 'aceptado-aceptar',
     props: {                      
         ruta: Object,
         movimiento: Object

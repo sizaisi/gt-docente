@@ -119,8 +119,7 @@ export default {
                 }
             })    
         },  
-        getAsesor() {
-            let me = this
+        getAsesor() {            
             let formData = new FormData()
             formData.append('idexpediente', this.expediente.id)                  
             formData.append('idgrado_proc', this.idgrado_proc)                  
